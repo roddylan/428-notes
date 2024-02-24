@@ -1,0 +1,691 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage{enumitem}
+\usepackage{bbm}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\setenumerate[1]{label=\Roman*.}
+\setenumerate[2]{label=\Alph*.}
+\setenumerate[3]{label=\roman*.}
+\setenumerate[4]{label=\alph*.}
+
+\title{CMPUT 428: Tracking}
+\author{Roderick Lan}
+% \date{January 11, 2024}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Expln}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{ovr}{Overview}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10!white!50
+}{ovr}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{refer}{Reference}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{refer}
+\begin{document}
+
+% \setcounter{section}{1}
+\maketitle
+\tableofcontents
+\break
+% \section*{Lecture 1}
+
+\section{Lecture 3 - Jan 18}
+lec05TrackIntro\\
+Turn temporal intensity change into spatial intensity change. 
+Similar to optic flow. Aka Registration Tracking. 
+\begin{expln}
+    {Why Visual Tracking?}{}
+    Computers became fast enough. Went from 
+    text based to windows based interfaces. Processors evolved, became faster 
+    and related technology became cheap enough to be used commercially by all.
+    Applications for visual tracking became commercially viable. 
+    \\
+    % Could handle more data, realized concepts and methodologies had to be improved;
+    Many applications for it, ie. motion control, RCI, measurement. 
+
+
+\end{expln}
+\subsection{Applications - Watching a moving target}
+Camera and computer tracks motion of user and interprets this in an online interaction
+\\
+Uses:
+\begin{list}{}{}
+    \item \textbf{Security} - ie. monitoring people moving in a subway station or store
+    \item \textbf{Measurement} - ie. speed, alert on colliding trajectory
+\end{list}
+
+\subsection{Applications - Human-Computer Interfaces}
+Camera and computer can determine how things move in a scene over time
+\\
+Can interact w/ menus, buttons and interpret physical interactions
+
+
+\subsection{Applications - Interpreting tasks and functinality}
+Use tracking to interpret
+\begin{enumerate}
+    \item Physics of a mechanism
+    \item How a car is repaired
+    \item How a human cooks in a kitchen
+\end{enumerate}
+
+\subsection{Applications - Human-Machine Interfaces}
+Camera and computer tracks otions of human user, interprets this and machine/robot carries out a task.\\
+Uses:
+\begin{list}{}{}
+    \item \textbf{Remote manipulation}
+    \item \textbf{Service robotics} (ie. for the handicapped and elderly)
+\end{list}
+
+\subsection{Applications - Human-Human Interfaces}
+Camera and computer tracks motions and expressions of human user, interprets, codes, 
+transmits to read at remote location.
+Uses:
+\begin{list}{}{}
+    \item \textbf{Ultra low bandwidth video communication} (ie. reanimate video comm)
+    \item \textbf{Handheld Video cellphone}
+\end{list}
+
+
+\subsubsection{Bandwidth and Processing Req.}
+For TV camera:
+\begin{list}{}{}
+    \item Binary - 1 bit * 640x480 * 30 = 9.2 Mbits/sec
+    \item Grey - 1 byte * 640x480 * 30 = 9.2 MB/sec
+    \item Color - 3 byte * 640x480 * 30 = 27.6 MB/sec
+\end{list}
+\subsection{Video Processing}
+Almost all pixels change\\
+Constancy - physical scene stays the same
+\\
+Fundamental types:
+\begin{outline}[enumerate]
+    \1 Visual motion detection
+        \2 relate 2 adjacent frames; optical flow
+        \2 small differences
+    \1 Visual Tracking
+        \2 globally relating all frames - large differences    
+        \2 similar to motion detection
+
+\end{outline}
+
+\subsection{Types of tracking}
+\textbf{Point Tracking} - extract point (pixel loc) of a particular image feature in each img
+\\
+\textbf{Segmentation Based Tracking} - define identifying region property (ie. color, texture, stat); repeatedly extract this region in each img
+\\
+\textbf{Stabilization Based Tracking} - formulate img geometry + appearance equations and use these to 
+acquire img transform properties for each img.
+\begin{list}{}{}
+    \item relate later instances and morph back to original coordinate system
+\end{list}
+% \begin{list}{}{}
+%     \item \textbf{Point Tracking} - extract point (pixel loc) of a particular image feature in each img
+%     \item \textbf{Segmentation Based Tracking} - 
+%     \item \textbf{Stabilization Based Tracking} - 
+% \end{list}
+
+
+
+\subsection{Point Tracking}
+Simplest technique; already commercialized in motion capture systems. \\
+Features commonly LED's (visible or IR), special markers (reflective, pattern)
+\begin{list}{}{}
+    \item easily differentiable from rest of image
+\end{list}
+Detection - (ie. pick brightest pixel(s), cross correlate image to find the best match for a known pattern)
+\\
+Not exactly real time (has some delay), delay is problem\footnote[1]{might not be a problem for all point tracking systems}
+
+\subsection{Tracking by Segmentation}
+Doesn't need special markers, uses properties/features in video (ie. color).
+\\
+Features should be differentiable from rest of the image/frame. \\
+Can represent statistically (after casting to RGB space/"cube")
+with ellipsoid; find mean and covariance in each axis (RGB). 
+Color outliers black, inliers white; gets mask.
+
+
+\subsubsection{Gray Level Thresholding}
+Get histogram of intensities.
+If histogram bimodal, put threshold between the models (if you can clearly separate).
+\\
+Leads to binary image (?), imperfectly represents image.
+
+\subsubsection{Compare: Natural Image Slide}
+Graph is white noise statistics
+
+\subsection{Region Tracking (Segmentation Based)}
+Select a "cure" $\gamma (I(x,y))$
+\begin{list}{}{}
+    \item foreground enhancement
+    \item background subtraction
+\end{list}
+Segment
+\begin{list}{}{}
+    \item threshold
+    \item "clean up"
+    \item can serve as preprocessing
+\end{list}
+Compute Region geometry (moment images)
+\begin{list}{}{}
+    \item centroid (first moment; central gravity)
+    \item orientation (second moment)
+    \item scale (second moment)
+\end{list}
+\subsubsection{Regions}
+$c_p = P \to \mathbb R^3$ (color space) - intrisic coloration
+\begin{list}{}{}
+    \item homogenous region - $c_p$ roughly constant
+    \item texturized region - $c_p$ significant intensity gradients horizontally and veticall
+    \item contour - $c_p$ local rapid change in contrast (edges; can determine where obj ends)\footnote[2]{homog and texturized for inliers, contours for edge}
+\end{list}
+\begin{expln}
+    {Homogenous Color Region - Photometry}{}
+    Look at img in rgb space, use color statistics. Find something in
+    rgb space that is distinguished from everything else; easy to track in just rgb.
+    \\
+    middle vals (diag) is grayscale; all images have
+\end{expln}
+\subsubsection{Color Representation}
+$c_R = R \to \mathbb R^3$ - irradiance (reflected light) of region R
+\\
+Color representation
+\begin{list}{}{}
+    \item DRM (Klinker et al): if P is Lambertian has matte line and highlight line
+    \item user selects matte pixels in R
+    \item PCA fits ellipsoid $(S,R^\top, T)$ to matte cluster
+    \item color similarity $\gamma (I(x,y))$ defined by Mahalanobis dist.
+    \item $|S^{-1}R^\top (I(x,y) - T)| < \text{pixels inside threshold/tracked obj}$ 
+\end{list}
+\noindent
+Color extension 
+\begin{list}{}{}
+    \item $H_i$ = num of pixels in class $i$
+    \item Histograms are vectors of bin counts 
+    \item 
+\end{list}
+Can use Fourier transform if going beyond color
+
+\pagebreak
+\section{Lecture 4 - Jan 23}
+lec05bRegTrack2
+\\
+\textbf{Registration Tracking} (Lucas-Kanade)
+\\
+optical flow $\to$ tracking: relate pixels from $t$ to $t+1$ $\to$ relate from $t$ to $t + n$
+\\
+% Rotation matrix $\times$ Translation matrix 
+Geometry in 3d is 8DOF (not 3DOF)
+\\
+Goal of tracking is to be able to compare template img w/ region in img 
+(warp region to fit to template)
+\\[5pt]
+Simple Approach:
+\begin{list}{}{}
+    \item Minimize brightness difference $E(u, v) = \sum_{x,y}^{}(I(x+u,y+v) - I(x,y))^2$
+    \\This only works when there is a distinct difference
+\end{list}
+\noindent
+Simple SSD bad, no subpixel accuracy (important in robotics) and not efficient.
+% \\
+\subsection{Lucas-Kanade Algorithm}
+\begin{flalign*}
+    E(u, v) &= \sum_{x,y}^{}(I(x+u,y+v) - I(x,y))^2\\
+    &= \sum_{x,y}^{}(I(x,y)- T(x,y) + uI_x + uI_y) ^2
+\end{flalign*}
+(LK OF - solve for translational motion of a patch (same as regular OF))
+\\[10pt]
+Reference img serves as template of obj
+\\
+Tracking Cycle:
+\begin{enumerate}
+    \item Predict - prior states predict new appearance
+    \item Image warping - generate normalized view; align to reference \\
+        Able to compare w/ reference
+    \item Model inverse - compute error from nominal
+    \item State integration - apply correction to state
+\end{enumerate}
+aka. Stabilization based tracking / Registration based tracking
+
+\subsubsection{Optic Flow to Tracking}
+same as optic flow but update "tracking state" $\vec p$ 
+\[
+    \vec p = \vec p+ \vec u
+\]
+$\vec p$ represents total motion; global displacement
+\\
+For $t=1,2,\ldots$ $\mathrm{Im}_t = \mathrm{Im}(t,x+p) - \mathrm{Im}(0,x)$ (temporal derivative is b/w current and first frame)
+\\
+Round $p$ to integer to avoid indexing issues
+
+\subsubsection{Tracking LK}
+init $\vec p=\vec 0$, template $T$\\
+For $t=1\ldots$
+\begin{list}{}{}
+    \item Receive $I(t+1)$
+    \item Compute $\mathrm{dIm} = I(t+1, x+p) - T$
+    \item Solve $-\mathrm{Im}_t = Mu$ via $u = M \backslash \mathrm{Im}_t$
+    \item Update $p=p+u$
+\end{list}
+\noindent
+Doesnt account for resizing (zoom in, zoom out or obj go closer/away from camera)
+
+\subsection{Registration: Translation to Warp}
+Translation $\mathbf u $ $\to$ Warp $\mathbf w(x,p)$
+
+\begin{flalign*}
+    \mathrm{dIm} &= I(t+1, x + [p_u \ p_v]^\top) - T \\
+    &= I(t+1, w(x,p)) - T \text{ where $w=x+p$} \\
+    w(x,p) &= R (p_3) + \begin{bmatrix}
+        p_1 \\ p_2
+    \end{bmatrix} \\
+    w(x,p) &= \begin{bmatrix}
+        \cos p_3 & \sin p_3 \\
+        \sin p_3 & \cos p_3
+    \end{bmatrix}
+    + \begin{bmatrix}
+        p_1 \\ p_2
+    \end{bmatrix} \text{ Transl + Rot ($R$) SE2, 3DOF}
+    \\
+    % 
+    w(x,p) &= p_4 R(p_3) + \begin{bmatrix}
+        p_1 \\ p_2
+    \end{bmatrix} \text{ Transl + Rot + Scaling ($p_y$) 4DOF; $R$ is $2\times 2$}\\
+    w(x,p) &= Ax + \begin{bmatrix}
+        p_1 \\ p_2
+    \end{bmatrix} = \begin{bmatrix}
+        p_3 & p_4 \\ p_5 & p_6
+    \end{bmatrix}x + \begin{bmatrix}
+        p_1 \\ p_2
+    \end{bmatrix}
+    \text{ Affine 6DOF} 
+    \intertext{Let = $\begin{bmatrix}
+        x \\ y \\  \mathbbm 1
+    \end{bmatrix} \sim \begin{bmatrix}
+        x \\ y \\ w
+    \end{bmatrix}$ (3 dimensional vector)}
+    w(x,p) &= Hx = \begin{bmatrix}
+        p_1 & \cdots & \cdot \\
+        \vdots & \ddots & \vdots \\
+        \cdot & \cdots & p_9
+    \end{bmatrix}
+    \begin{bmatrix}
+        x \\ y \\ w
+    \end{bmatrix} \text{ $H$ is a $3\times 3$ matrix}
+\end{flalign*}
+
+\subsubsection{Intensity based tracking w/ LK}
+Find image warping function parameters s.t.
+\[
+    \mathcal I (\mathbf w (\mathbf x; \mathbf p_i)) = \mathcal I_T(\mathbf p_i)
+\]
+\noindent
+Non-linear minimization problem; \\
+Use Gauss-Newton to minimize, applies first order Taylor series approx
+
+\subsubsection*{LK - Approx by linearization}
+Jacobian matrix of current and gradient imgs
+
+\subsubsection{Image Derivatives}
+Can get derivs from comparing shifts, warps/rotates
+\\
+We want $M$ to be linearly independent (numerical stability)
+% \begin{flalign*}
+%     I_r &= -y I_x + x I_y = 
+% \end{flalign*}
+
+\begin{refer}
+{Related Chapter}{}
+Read ch5. in Heath textbook (NLLS) 
+
+\end{refer}
+
+
+\subsubsection{{Planar Texture Variability; Affine Variability}}
+Affine Warp Func:
+\[
+    \begin{bmatrix}
+        u_w \\ v_w
+    \end{bmatrix} = \mathcal W_a (\mathbf p, \mathbf a) = 
+    \begin{bmatrix}
+        \mathbf a_3 & \mathbf a_4\\
+        \mathbf a_5 & \mathbf a_6
+    \end{bmatrix}\mathbf p +
+    \begin{bmatrix}
+        \mathbf a_1 \\
+        \mathbf a_2
+    \end{bmatrix}
+\]
+Image Variability:
+\[
+    \sum_{i=1}^{6}\frac{\partial}{\partial a_i} \mathbf I_w \Delta a_i
+    = \begin{bmatrix}
+        \frac{\partial I}{\partial u} , \frac{\partial I}{\partial v}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \frac{\partial u}{\partial a_1} & \cdots & \frac{\partial u}{\partial a_6}\\
+        \frac{\partial v}{\partial a_1} & \cdots & \frac{\partial v}{\partial a_6}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \Delta a_1 \\ \vdots \\ \Delta a_6
+    \end{bmatrix}
+\]
+\\
+When we track, try to figure out $y$s
+\subsubsection{Planar Texture Variability; Projective Variability}
+Dont need more than 3 col when it is a plane \\(finish)
+
+
+\subsection{LK Iterative Minimization}
+Minimize sum of squared differences
+\[
+    f(\Delta \mathbf x) = \frac12 \|\mathbf y(\mathbf 0) +\mathbf J_\mathbf y (\mathbf 0)\Delta \mathbf x \|^2
+\]
+parameter inc. has closed form solution (Gauss-Newton)
+\[
+    \Delta \mathbf x = -\mathbf H ^{-1} \mathbf J _\mathbf y (\mathbf 0)^\top \mathbf y(\mathbf 0)
+\]  
+\[
+    \mathbf H = \mathbf J _\mathbf y (\mathbf 0 )^\top \mathbf J_\mathbf y (\mathbf 0)
+\]
+Update param approx
+\[
+    \hat {\mathbf x} \gets \hat {\mathbf x} + \Delta \mathbf x 
+\]
+(using multiplication instead of addition can help stability, was able to calculate for affine with this switch)
+\\
+Slide 34-40
+\begin{list}{}{}
+    \item error akin to temporal difference
+\end{list}
+
+\subsection{Registration based Tracking}
+\[
+    \mathbf p_\mathbf t = \argmax_{\mathbf p} f(\mathbf I_\mathbf 0 (\mathbf x ), \mathbf I_\mathbf t (\mathbf w (\mathbf x, \mathbf p)))
+\]
+Tracking not perfect; Estimates lag a bit, could iterate more on same image to improve
+\\
+Need tracking for 3d, (pixel correspondence and relating b/w frames)
+
+
+
+
+
+
+
+
+
+\section{Lecture 5 - Jan 25}
+lec05cCRV16IROS17ModularShort22.pdf
+\begin{refer}
+    {Relevant paper}{}
+    Modular Decomposition and Analysis of Registration Based Trackers (MTF)
+\end{refer}
+\begin{expln}
+    {Registration Based Tracking}{}
+    Find the optimal warp or geometric transformation that registers each image in a sequence with the template
+    \[
+        \mathbf{p_t} = \argmax_\mathbf p f(\mathbf{I_0}(\mathbf x), \mathbf{I_t}(\mathbf w (\mathbf x, \mathbf p)))
+    \]
+    "align to find best overlap given some warp"\\
+    $\mathbf x = [\mathbf x_1, \ldots, \mathbf x_N]$ (vector of coordinates in patch)
+    $\mathbf x_k = [x_k, y_k]^\top \in \mathbb R^2$
+    \\
+    $\mathbf{I(x)} = [I(x_1,y_1), \ldots, I(x_N,y_N)]^\top \in \mathbb R^{N}, I(x,y) : \mathbb R^2 \mapsto \mathbb R$ 
+    \\
+    $\mathbf p = [p_1, \ldots, p_S]$ (parameters), $S:$ DOF of image motion - "state space model"
+    \\
+    $\mathbf w : \mathbb R^2 \times \mathbb R ^S \mapsto \mathbb R^2$
+    \\
+    $f : \mathbb R^N \times \mathbb R^N \mapsto \mathbb R$
+\end{expln}
+\noindent
+Points dont have to be on a grid, can be arbitrarily placed.
+\subsection{Motivation of Reg Tracking}
+Process in registration based tracking has become fragmented since LK, intuitive way exists
+to relate these by decomposing the tracking task into three modules. 
+(most contributinos confined to only 1-2 of these modules)\\
+Modular Tracking Framework (\textbf{MTF}) to easily plug in new methods.
+
+
+\subsection{Modular Decomposition}
+Appearance model\\
+Search Model - maximize 
+\\
+(finish)
+
+\subsection{State Space Model}
+\[
+    \mathbf{p_t} = \argmax_\mathbf p f(\mathbf{I_0}(\mathbf x), \mathbf{I_t}(\mathbf w (\mathbf x, \mathbf p)))
+\]
+Warping function or geometric transformation that represents set of allowable image motions of the object. 
+\\
+Embodies constraints place on the warp parameter space (search efficiency, alignment precision).\\
+Includes DOF of allowed motion, actual paramterization of warping function
+\\
+(naive method of searching just an exhaustive search)
+
+\begin{expln}
+    {Registration: Trans $\to$ Warp}{}
+    Find params of warping function s.t. 
+    \[
+        \mathcal I (\mathbf w (\mathbf x;\mathbf p_i)) = \mathcal I_T (\mathbf p_i)
+    \] for all template points
+\end{expln}
+
+\begin{ovr}
+{Homography}{}
+Planar Projective Warping
+\[
+    x_i' = Hx_i
+\]
+Homography similar to affine; 8DOF
+\end{ovr}
+\noindent
+More DOF not necessarily better, more complex models (higher DOF), 
+can be less stable.
+
+\subsection{Search Method}
+\[
+    \mathbf p_t = \argmax_\mathbf p
+\]
+Optimization method that maximizes AM similarity functions
+2 categories
+\begin{enumerate}[]
+    \item \textbf{Gradient Descent} - Newton or Gauss-Newton method
+    \item \textbf{Stochastic Search} - Sampling based
+\end{enumerate}
+
+\subsubsection{Simple img reg w/ SSD error norm}
+Exhaustive Search (not really needed if near minimum, mathematical structure exists)
+\\
+Solve w/ Gauss-Newton optimization
+
+\subsubsection{Homogenous Coordinates: Translate 2D point}
+old: $x' = x + dx$
+\\
+new: $x' = M\cdot dx$
+\[
+    \begin{bmatrix}
+        x' \\ y' \\ 1
+    \end{bmatrix}
+    = \begin{bmatrix}
+        1 & 0 & \Delta x\\
+        0 & 1 & \Delta y \\
+        0 & 0 & 1
+    \end{bmatrix}
+    \begin{bmatrix}
+        x\\y\\1
+    \end{bmatrix}
+\]
+
+\subsubsection{Search method examples slide}
+inverse additiive not good
+\\
+inverse compositional much more efficient than otherse
+\\
+multiplication better than addition
+
+
+\subsubsection{Jurie and Dhome Learning Phase}
+Apply set of random transformations/warps to initial template. If we do enough warps, then we can do exhaustive search and find/output nearest warp.\\
+Warp with $\Delta x$ warp parameters. Stack warps into matrix.
+\[
+    \mathbf{X} = \mathbf{AY}
+\]
+or
+\[
+    \Delta \mathbf{X} = \mathbf{AY}
+\] ($\mathbf A$ is Jacobian in $\Delta \mathbf X$ case)
+\\
+Find average linear predictor that speeds up Xs.
+\\
+% Taylor approximator centers about some point
+Jacobian works best near target
+\\
+Learn linear ppredictor w/
+\[
+    \mathbf A = \mathbf{XY}^\top (\mathbf{YY}^\top)^{-1}
+\]
+or \[
+    \mathbf{A}' = \mathbf{Y}'\backslash\mathbf{X}'
+\]
+
+
+\subsubsection{Example Search Methods}
+Nearest Neighbor Search (NN)
+\begin{list}{}{}
+    \item generate sample by warping $\mathbf{I_0(x)}$
+    \item (can create $k$-deep trees)
+    \item inverse method $\to$ tree precomputed 
+    % \item can get high dimensional
+    % didnt solve a problem
+\end{list}
+
+Particle Filter (PF)
+\begin{list}{}{}
+    \item generate samples, compute weight for each; estimate $\Delta p$ as weighted avg
+\end{list}
+\begin{expln}
+    {Issues with Affine}{}
+    \[
+        x' = Ax + b
+    \]
+    $A$ and $b$ not similar 
+\end{expln}
+
+
+\subsection{Appearance Model}
+\[
+    \mathbf{I_0} \text{ and } \mathbf{I_t}
+\]
+Similarity measure between two image patches:
+\begin{list}{}{}
+    \item candidate warped patch from current img
+    \item tempalte extracted from initial img
+\end{list}
+2 main categories
+\begin{enumerate}
+    \item SSD like
+    \item Robust
+\end{enumerate}
+\subsubsection{Appearance Model - Examples}
+SCV and RSCV - statistical measures \\
+ZNCC - correlation and convolution good at measuring similarity
+\\
+NCC performs very well on regular images, not so much on irregular imgs. (?)
+\\
+MI good for irregular imgs, ie. mapping map to sat img (?)
+\\
+CCRE - more complex statistical measure\\
+NCC generally the best 
+% \begin{expln}
+%     {How to characterize}{}
+% \end{expln}
+
+\subsubsection{Texture}
+High texture region desired so we can find distinct points. \\[5pt]
+rocks are trackable (grain pattern)
+
+\subsection{System Design}
+\[
+    \mathbf{p_t} = \argmax_\mathbf{p_s,p_a} f(\mathbf{I_0}(\mathbf x), \mathbf{I_t}(\mathbf w (\mathbf x, \mathbf{p_s})), \mathbf{p_a})
+\]
+\noindent
+Choosing search methods, appearance models, state space models\\
+Choosing to combine trackers (ie. sample based stochastic tracker + newton based tracker; breadth + precision).
+\\
+Adding illumination models.
+\\[10pt]
+more hz = more trackers\\
+inverse methods faster than none inverse methods (due to getting rid of/changing $+$ and $\Delta$)\\
+inverse methods let us precompute (?)
+
+
+% \subsection
+
+
+
+
+
+
+
+\end{document}

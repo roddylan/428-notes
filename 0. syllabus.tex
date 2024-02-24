@@ -1,0 +1,127 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+\title{CMPUT 428: Intro/Syllabus}
+\author{Roderick Lan}
+\date{January 9, 2024}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{expln}{Explain}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{proof}{Proof}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = gray!75!black,
+  colback = gray!10
+}{prf}
+
+
+\begin{document}
+
+% \setcounter{section}{1}
+\maketitle
+
+\section*{Intro}
+  Prof: Martin Jagersand \\
+  Can use NumPy or Matlab for operations \\
+  Labs: first lab for help/to learn, then turn in lab. Demo after \\[5pt]
+  Exam 1 Feb 27 (20\%)\\
+  Exam 2 Apr 2 (20\%)\\
+  Project (used as Final, 20\%) \\
+  \href{https://ugweb.cs.ualberta.ca/~vis/courses/CompVis/lectures22}{Slides}
+
+\section{Overview}
+\subsection{Multiview Geometry}
+2D simpler, but same problem. Can carry out things, but don't always need "full models"
+(model only needs to consider relevant features). \\
+Multiple points $\rightarrow$ projected onto surface. Can be done using only images.
+\begin{list}{-}{spacing}
+  \item ie. [typical processing pipeline:] take many images $\rightarrow$ figure out where cams are $\rightarrow$ project as rays, see where they intersect $\rightarrow$ create 3d model (merge point clouds) $\rightarrow$ use pictures to get texture/color 
+  \item When generating from webmining, can relate many "photo-consistent" images together by their relative position/orientation (determine where they are s.t. it minimizes error of reconstruction) $\rightarrow$ generate model
+  \item Neural nets can learn to predict 3d maps, but won't understand geometry. (ie. trained network good for depth mapping, but not for video tracking)
+\end{list}
+
+\subsection{Human Vision (Dorsal/Ventral Pathways)}
+
+Humans dont internalize detailed 3d maps, but we can still have representations. 
+Use vision as a process, direct motor responses based on it. \\
+Object detection pathways separate from other vision pathways in brain.
+
+\subsection{Camera Geometry}
+Partial information used often (ie. for measurements in single img, get visual constraints, visual servoing, video tracking, rendering, etc.)
+\begin{list}{}{spacing}
+  \item Visual servoing requires video tracking to perform well.
+  \item More points/triangles $\rightarrow$ better rendering. Limited by source (?). Things like diffusion equations can be used to refine things like texture resolution of renders
+\end{list}
+Understandning (relative) coordinate systems in images is important. (ie. if you know pillars are equidistant, but not projected equiidistantly, can use that as coord sys to map image)
+% \begin{list}{}{spacing}
+%   \item Similar to how camera
+% \end{list}
+
+\subsection{Geometry for Hand-Eye Coordination}
+Formulate as local reqs rather than global. (don't need to worry abt what the global shape is)
+
+\subsection{Intro to Image-based Visual Servoing}
+Given 'desired' img, sees 'initial' img. Goal is to transform initial to desired.\\[5pt]
+Can be done with just imgs, ie. take corner features and move arm until corner feature match desired
+\begin{list}{}{spacing}
+  \item Difference b/w features formulated as error. Error minimized.
+  \item RL problem does the same
+\end{list}
+\begin{expln}{Vis. Spec. Err.}{}
+  Point to Point task Error: $E = [\vec y ^* -\vec y _0]$\\
+  Point to Line: $E_{pl}(\vec y, \vec l) = \begin{bmatrix}
+    \vec y_l \cdot \vec l _l \\ \vec y_r \cdot \vec l_r
+  \end{bmatrix}$ where $\vec l_l = [y_2 \times y_3]_l$
+\end{expln}
+
+\subsection{Proj. Transformations}
+Uses rotation matrix $H$\\
+Projective - 8 DOF \\
+Affine - 6 DOF \\
+Metric - 4 DOF \\
+Euclidean - 3 DOF 
+\\
+Cannot find absolute size from imgs alone.
+\begin{example}{Cut in the Middle Task}{}
+  Get midpoint by drawing 2 lines from corners, finding intersection. \\
+  $x_m = (l_1 \times l_2)$\\
+  Get vanishing point $x_\infty$ and intersect with midpoint
+\end{example}
+
+CV traditionally seen as converting images to models. Guiding robots more akin to what we want to do with CV in the future
+\end{document}

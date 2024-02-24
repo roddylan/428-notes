@@ -1,0 +1,398 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\title{CMPUT 428: Optical Flow and Motion Detection; Image Registration}
+\author{Roderick Lan}
+% \date{January 11, 2024}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Expln}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{ovr}{Overview}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10!white!50
+}{ovr}
+
+% \NewTotalTColorBox[auto counter, number within = section]{\ovr}{ +m +m +m }{ 
+%     notitle,
+%     breakable,
+%     colback=red!5!white,
+%     frame hidden,
+%     boxrule=0pt,
+%     enhanced,
+%     sharp corners,
+%     borderline west={4pt}{0pt}{green!50!black},
+% }{
+%     \textcolor{red!50!black}{
+%         \sffamily
+%         \textbf{Overview~\thetcbcounter.~#1}%
+%     }%
+%     % #1
+%     \textcolor{black}{
+%         \sffamily 
+%         \text{\newline#3}
+%     }%
+%     % #3
+% }
+
+
+
+% \makeatother
+% \newtcbtheorem[auto counter, number within = section]
+% {expln}{Proof}{%                                                        
+%   breakable,
+%   fonttitle = \bfseries,
+%   colframe = red!75!black,
+%   colback = red!10
+% }{Pf}
+
+
+\begin{document}
+
+% \setcounter{section}{1}
+\maketitle
+\tableofcontents
+\break
+% \section*{Lecture 1}
+
+\section{Lecture 1 - Jan 11}
+(Lec04 slides; Ch4 - 3DV; Ch8 - Szeliski)
+\subsection{Image Motion}
+Precursor to understand intensity exchange and what's geometrically happening in img. \\
+Find relationship b/w pixel value changes and motion.
+\begin{example}
+    {Image Motion Video Example (slides)}{example video}
+    Arrows point to general direction of motion.\\
+    Thresholds used (only compute for pixel changes that meet a certain threshold; account for shadows, etc.)
+\end{example}
+\begin{ovr}
+    {Image Motion}{ovr image motion}
+    Somehow quantify frame-to-frame differences in image sequences.
+    \begin{enumerate}
+        \item Image intensity difference
+        \item Optic flow
+        \item 3-6 dim img motion computation
+    \end{enumerate}
+    Relate two adjacent frames (small differences) by:
+    \begin{list}{}{}
+        \item $\mathrm{Im}(x + \delta x, y + \delta y, t + \delta t) = \mathrm{Im}(x, y, t)$
+        \item (find local shift to match old frame with new frame; might not be exact match for different intensity values)
+    \end{list}
+\end{ovr}
+
+\textbf{Motion} is used for: 
+\begin{enumerate}
+    \item \textbf{Attention} - Detect and direct using eye/head motions
+    \item \textbf{Control} - Locomotion, manipulation, tools, etc.
+    \item \textbf{Vision} - Segment, depth, trajectory
+\end{enumerate}
+
+\subsubsection{Camera Reorientation}
+Subtract images to see changes in pixels. 
+\subsection{Optic Flow Field}
+Vector field over img $[u, v] = f(x, y)$ where $u, v$ = vel vector, $x, y$ = Img position
+\begin{expln}
+{}{}
+\textbf{FOE, FOC} = Focus of Expansion, Contraction
+\end{expln}
+$\mathrm{Im}(x + \delta x, y + \delta y, t + \delta t) = \mathrm{Im}(x, y, t)$\\[5pt]
+We get motion when camera is moved, but if we look strictly at the object, we cant tell if camera is moving or obj is moving. 
+\begin{list}{}{}
+    \item We want to map points from diff perspectives
+\end{list}
+\subsubsection{How to Compute Flow Vectors}
+Relate points. Go from image based measure to 3d point measure.\\
+Possible Assumptions:
+\begin{enumerate}
+    \item \textbf{color constancy} - point in H looks the same in I
+    \item \textbf{small motion} - points do not move very far
+    \subitem This is the \textbf{optical flow} problem
+\end{enumerate}
+
+Assume:
+\begin{enumerate}
+    \item Image intensifies from obj points remain constant over times
+    \item Image displacement.motion small
+\end{enumerate}
+Use median of pixel values. \\
+If constant and changes small, can use Taylor expansion of intensity variation:
+\\[5pt]
+$\mathrm{Im}(x + \delta x, y + \delta y, t + \delta t) = \mathrm{Im}(x, y, t) 
++ \frac{ \partial \ \mathrm{Im}}{\partial x}\delta x 
++ \frac{ \partial \ \mathrm{Im}}{\partial y}\delta y
+\frac{ \partial \ \mathrm{Im}}{\partial t}\delta t
+$
+\\[5pt]
+Using constancy assumption, \\[5pt]
+$0 =  \frac{ \partial \ \mathrm{Im}}{\partial x}\delta x 
++ \frac{ \partial \ \mathrm{Im}}{\partial y}\delta y
+\frac{ \partial \ \mathrm{Im}}{\partial t}\delta t$
+
+\subsubsection{Solve for Optic Flow}
+\begin{expln}
+{}{}
+$
+\dfrac{\partial I}{\partial x} \approx \dfrac{I(x,y) - I(x-1, y)}{1}
+$\\[5pt]
+$
+\dfrac{\partial I}{\partial t} \approx I(x,y, t) - I(x, y, t-1)
+$
+\\[5pt]
+Rewrite as dot product \\[5pt]
+$
+-\dfrac{\partial \mathrm{Im}}{\partial t} \delta t = \left ( 
+\dfrac{\partial \mathrm{Im}}{\partial x}, \dfrac{\partial \mathrm{Im} }{\partial y}
+\right )
+\cdot \begin{bmatrix}
+    \delta x \\ \delta y
+\end{bmatrix}
+= \nabla \mathrm{Im} \cdot \begin{bmatrix}
+    \delta x \\ \delta y
+\end{bmatrix}
+$
+
+\end{expln}
+Flatten 2D images into vector $\to$ column vector where each column 
+is stacked (top = first col, bottom = last col).\\
+Use simultaneous equations.
+\\
+Typically solve for motion in 2x2, 4x4, 8x8, or larger. \\
+Dot product from Expln 1.2.2 is an over determined equation system; \\
+\begin{math}
+    d\mathrm{Im} = \begin{bmatrix}
+        \vdots \\ -\frac{\partial \mathrm{Im}}{\partial t} \\ \vdots
+    \end{bmatrix} =
+    \begin{bmatrix}
+        \vdots & \vdots \\ \frac{\partial \mathrm{Im}}{\partial x} & \frac{\partial \mathrm{Im}}{\partial y} \\ \vdots & \vdots
+    \end{bmatrix} \begin{bmatrix}
+        \delta x \\ \delta y
+    \end{bmatrix} = M \cdot u
+\end{math}
+
+can be solved via:
+\begin{list}{}{}
+    \item LSS - $u = M \backslash d\mathrm{Im}$
+    \item QR factorization - $(Q^\top M)u = Q^\top d\mathrm{Im}$    $[Q,R] = qr(M), Q^\top M = R$
+\end{list}
+
+
+\begin{expln}
+    {Conditions for Solvability}{}
+    $A^\top A$ is invertible \\
+    $A^\top A$ entries not too small (noise) \\
+    $A^\top A$ well-conditioned \\
+    Study eigenvals; $\lambda_1 / \lambda_2$ not too large ($\lambda_1 > \lambda_2$)
+\end{expln}
+
+\subsubsection{Aperture Problem}
+Gradients very large or very small; small $\lambda_1$, small $\lambda_2$\\
+We want distinct edges, so large eigenvalues and gradients that are different w/ large magnitudes.\\
+Looking at gradients more computationally stable
+
+
+\subsubsection{L1 Review}
+Use lots of tiles/small patches for 3d motion (small patches easy to track (?))
+% \\Find 
+
+\section{Lecture 2 - Jan 16}
+lec05bRegTrack2\\
+For temporal difference (ie. frame 1 - frame 0), doesn't make sense if camera is moving. \\
+Vector fields characterize vertical and horizontal motion ($\mathbf u$) \\
+image constancy - amount of light being reflected is constant; frame to frame problem
+\\
+\begin{math}
+    d\mathrm{Im} = \begin{bmatrix}
+        \vdots \\ -\frac{\partial \mathrm{Im}}{\partial t} \\ \vdots
+    \end{bmatrix} =
+    \begin{bmatrix}
+        \vdots & \vdots \\ \frac{\partial \mathrm{Im}}{\partial x} & \frac{\partial \mathrm{Im}}{\partial y} \\ \vdots & \vdots
+    \end{bmatrix} \begin{bmatrix}
+        \delta x \\ \delta y
+    \end{bmatrix} = M \cdot u
+\end{math}
+\\
+Overdetermined equation, 
+\begin{expln}
+    {Avoid Normal Equations}{}
+    Ill conditioned; doubles the sensitivity
+\end{expln}
+\subsection{Image Registration: Related Areas}
+\textbf{Optic flow} is directly responsible for things like video compression (mpeg)\\
+\textbf{Parametric motion}
+\begin{outline}
+    \1 medical image-to-anatomy atlas registration
+    \1 aligining separate photos to form a panormaa img
+\end{outline}
+\noindent
+\textbf{Video Tracking}
+\begin{outline}
+    \1 (Lab 2)
+\end{outline}
+\subsubsection{Tracking}
+Three assumptions in Image Registration
+\begin{outline}[enumerate]
+    \1 Brightness consistency
+        \2 img measurement (ie. brightness) in small region remains the same despite location change
+    \1 Spatial coherence
+        \2 neighboring points belong to same surface; have similar motion
+        % \2 
+    \1 Temporal persistence
+        \2 img motion of surface patch changes gradually over time
+        % \2 
+\end{outline}
+
+\subsection{Image Registration: 3 Applications}
+geometric space for 2d motion easy, 3d hard.
+\\
+warped plane 8d instead of 2d (4 points + another 2d)
+\\
+\textbf{Image Alignment} - $I(x), T(x)$ are two images\\
+\textbf{Tracking} - $T(x)$ is a small (salient) patch around point $p$ in first video img, $t=0$. $I(x)$ is the img at $t+1$\\
+\textbf{Optical Flow} - $T(x),I(x)$ are patches of imgs at $t,t+1$
+
+\subsection{Simple Approach (for translation; OF)}
+Minimize brightness difference
+\begin{list}{}{}
+    \item $E(u,v) = \sum_{x,y}^{}(I(x+u, y+v) - T(x,y))^2$
+    \item $u,v$ = $x, y $ shift
+    \item (Plot error landscape; can help understand issues ie. line $\to$ distinct one way, not the other)
+    \item higher res $\to$ harder to associate stuff, can use the natural variance of an object (ie. pattern in granite)
+\end{list}
+Problems:
+\begin{list}{}{}
+    \item not efficient
+    \item no subpixel accuracy
+\end{list}
+
+\subsection{Lucas-Kanada Algorithm}
+\begin{flalign*}
+    E(u,v) &= \sum_{x,y}^{}(I(x+u, y+v) - T(x,y))^2\\
+    \intertext{
+        $I(x+u, y+v) \approx I(x,y) + uI_x + v I_y$
+    }
+    &= \sum_{x,y}^{} (I(x,y) -T(x,y) +uI_x + vI_y)^2\\
+    &= \sum_{x,y}^{} (d\mathrm{Im}_{t(x,y)} + uI_x + vI_y)^2
+\end{flalign*}
+Overdetermined system \\
+\begin{math}
+    -\mathrm{Im}_t = \begin{bmatrix}
+        \vdots \\ -\frac{\partial \mathrm{Im}}{\partial t} \\ \vdots
+    \end{bmatrix} =
+    \begin{bmatrix}
+        \vdots & \vdots \\ \frac{\partial \mathrm{Im}}{\partial x} & \frac{\partial \mathrm{Im}}{\partial y} \\ \vdots & \vdots
+    \end{bmatrix} \begin{bmatrix}
+        u_ x \\ u_ y
+    \end{bmatrix} = M \cdot \mathbf u
+\end{math}
+\\
+Draw optic flor vector $\mathbf u$
+
+\subsection{MPEG Compression}
+Image doesn't change much from frame to frame; can reliably predict next image via optic
+flow vectors for 2-10 frames. Space is 1/10th of what it would have been if new jpeg made
+for each frame.
+\\
+Save initial compressed jpeg, use optic flow vectors to move patches around for next 10 frames instead of 
+rendering new jpeg each time.
+\\
+Movie compression about being able to do OF well; more computationally complex to make than to reproduce.
+(calculations slow, moving patches fast)\\
+
+\subsection{Pyramid Tracking}
+Look at OG img at high res, pixel shifts at higher resolutions correspond to smaller movements (opposite for lower resolution)\\
+Take average or gaussian filter to create subsample img w/ fewer processing issues
+\\Gaussian Pyramid and Laplace Pyramid
+\\(pyramid formed via taking gaussian, etc.)
+
+\subsubsection{Coarse to fine OF}
+(improves performance for large motion)\\
+Create pyramid; run up pyramid where full motion at pixel
+\\
+run on coarse (low res); warp and upsample, run OF to refine motion (?)
+
+\subsection{Visual Tracking/Stabilization}
+Globally relating all frames - \textbf{large difference}
+\begin{list}{}{}
+    \item 
+\end{list}
+big challenge w/ tracking - worst case = task failed (rely on whole sequence going right)
+\\
+compression worst case is just movie ugly for a few frames; recovers shortly after
+
+\subsection{Manually Selected Template in First Frame}
+Manually selected template $T= (I(t=0))$\\
+prediction - how far template moved a t-1; error from actual shift ($p+u$) and predicted/template shift ($p$)
+\\
+Optic flow - compute $\mathbf u$ b/w frames \\
+Tracking - keep track of global motion $\mathbf p$
+\\
+Similar to a pyramid, pyramid does this by artificially generating diff imgs
+\noindent
+
+\subsection{Image Registration}
+\textbf{Transform} a "source" img to match a "target" img
+\noindent
+Formulation
+\\
+Similar to tracking/optic flow, but a bigger problem than tracking and motion.\\
+Have to get global representation/projection (?). \\
+Represent simiilarity wih a similarity score
+\begin{list}{}{}
+    \item depends on data
+\end{list}
+Different transformations: rigid, affine, projection 
+\\
+Non=rigid registration\\
+can solve as OF problem w/ pyramid, more complex methods also available.
+
+
+
+
+\end{document}

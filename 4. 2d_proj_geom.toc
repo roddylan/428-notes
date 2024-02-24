@@ -1,0 +1,22 @@
+\contentsline {section}{\numberline {1}Lecture - Feb 1}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Homogenous Coordinates}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}2D Projective Plane}{3}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Lines}{3}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Conics}{4}{subsection.1.4}%
+\contentsline {subsubsection}{\numberline {1.4.1}Find Conics}{4}{subsubsection.1.4.1}%
+\contentsline {subsubsection}{\numberline {1.4.2}Tangent Lines to Conics}{4}{subsubsection.1.4.2}%
+\contentsline {subsubsection}{\numberline {1.4.3}Dual Conics}{4}{subsubsection.1.4.3}%
+\contentsline {subsubsection}{\numberline {1.4.4}Degneerate Conics}{4}{subsubsection.1.4.4}%
+\contentsline {section}{\numberline {2}Lecture - Feb 6}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Lines}{5}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Projective Transformation}{5}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Affinity and Projectivity on line at inf}{5}{subsubsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.3}Affine Rectification}{5}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}}{6}{subsubsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.4}DLT}{6}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Importance of Normalization}{6}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Degen. Config}{6}{subsubsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.5}Parameter Estimation}{7}{subsection.2.5}%
+\contentsline {subsubsection}{\numberline {2.5.1}Solving LS}{7}{subsubsection.2.5.1}%
+\contentsline {subsubsection}{\numberline {2.5.2}Homogenous Sys. of Eq}{7}{subsubsection.2.5.2}%
+\contentsline {subsubsection}{\numberline {2.5.3}Inhomogenous sol}{7}{subsubsection.2.5.3}%

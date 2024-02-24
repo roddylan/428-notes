@@ -1,0 +1,437 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage{enumitem}
+\usepackage{graphics}
+\usepackage{bbm}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\setenumerate[1]{label=\Roman*.}
+\setenumerate[2]{label=\Alph*.}
+\setenumerate[3]{label=\roman*.}
+\setenumerate[4]{label=\alph*.}
+
+\title{CMPUT 428: Tracking}
+\author{Roderick Lan}
+% \date{January 11, 2024}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Expln}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{ovr}{Overview}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10!white!50
+}{ovr}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{refer}{Reference}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{refer}
+\begin{document}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{thm}{Thm}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{thm}
+
+% \setcounter{section}{1}
+\maketitle
+\tableofcontents
+\break
+% \section*{Lecture 1}
+
+\section{Lecture - Feb 1}
+lec06ProjG2D.pdf
+\subsection{Homogenous Coordinates}
+Homog rep of 2D points and lines:
+\[
+    ax+by+c = 0 \Rightarrow (a,b,c)^\top (x,y,1) = 0
+\]
+\noindent
+point $\mathbf x$ lies on line $\mathbf l$ iff
+\[
+    \mathbf l^\top \mathbf x = \mathbf x^\top \mathbf l = 0
+\]
+Scale not inportant for incidence relation; equivalence class of vectors (any vector representative)
+\[
+    (a,b,c)^\top \sim k(a,b,c)^\top , \forall k \ne 0 \ \ \ \ \
+    (x,y,1)^\top \sim k(x,y,1)^\top, \forall k \ne 0
+\]
+Set of all equivalence classes in $\mathbb R^3$ is $(0,0,0)^\top$, forms $\mathbb P^2$
+\\
+2 homogenous points are equivalent if they are collinear.\\
+Homogenous coords - $(x_1, x_2, x_3)^\top$ (2DOF)\\
+Inhomogenous coords - $(x,y)^\top$ \\[5pt]
+$
+\begin{bmatrix}
+    x \\ y\\ 0
+\end{bmatrix}
+$ - point at infinity (ideal/vanishing point)
+\\[10pt]
+Intersection of two lines, $\mathbf l$ and $\mathbf l'$:
+\[
+    \mathbf x = \mathbf l \times \mathbf l'
+\]
+Line connecting two points, $\mathbf x$ and $\mathbf x'$:
+\[
+    \mathbf l = \mathbf x \times \mathbf x'
+\]
+\begin{expln}
+{Cross Product}{}
+\[
+    \mathbf x \times \mathbf x' = {[\mathbf x]}_\times \mathbf x'
+\]
+Easier to represent cross product with:
+\[
+    \mathbf{[x]}_\times =\begin{bmatrix}
+        0 & z & -y \\ 
+        -z & 0 & x \\
+        y & -x & 0
+    \end{bmatrix}
+\]
+\end{expln}
+\noindent
+Intersection of Parallel Lines, $\mathbf l = (a,b,c)^\top$ and $\mathbf l' = (a,b,c')^\top$
+\\
+(parallel lines meet at ideal points in projective geometry; don't meet in Euclidean)
+\[
+    \mathbf l \times \mathbf l' = (b, -a, 0)^\top
+\]
+$(b,-a)$ - tangent vector; $(a,b)$ - normal direction
+\\[5pt]
+Ideal Point: \[
+    \mathbf x_\infty = \begin{bmatrix}
+        x_1 & x_2 & 0
+    \end{bmatrix}^\top
+    \]
+Line at Infinity:
+\[
+    \mathbf l_\infty = \begin{bmatrix}
+        0 & 0 & 1
+    \end{bmatrix}^\top
+\]
+% \\
+$\mathbb P^2 = \mathbb R^2 \cup \mathbf l_\infty$ 
+($\mathbb P^2$ is $\mathbb R^2$ plus a "line at infinity")
+
+\subsection{2D Projective Plane}
+Perspective imaging models 2d projective space. Each 3D ray is a point in $\mathbb P^2$ (homogenous coords)
+Homog coords:
+\[
+    \begin{bmatrix}
+        x \\ y \\ z
+    \end{bmatrix} = s \begin{bmatrix}
+        x \\ y \\ z
+    \end{bmatrix} \ \ \ \forall s \ne 0
+\]
+Inhomog Coords:
+\[
+    \begin{bmatrix}
+        x' \\ y' 
+    \end{bmatrix} = \frac{1}{z}
+    \begin{bmatrix}
+        x \\ y
+    \end{bmatrix}
+\]
+principal axis - center ray 
+
+\subsection{Lines}
+Plane through origin projects to mathetmatical line when it is intersected w/ img plane
+\\
+Projective Line - a plane through the origin
+\[
+    \mathbf l ^\top \mathbf x = \mathbf x ^\top \mathbf l = 0
+\]
+Ideal Line - plane parallel to img
+\[
+    \mathbf l_\infty = \begin{bmatrix}
+        0 \\ 0\\ 1
+    \end{bmatrix}
+\]
+\begin{expln}
+    {Duality}{}
+    For any 2D projective property, dual property holds when the role of points 
+    and lines are interchanged \\
+    (symmetrical)
+\end{expln}
+\pagebreak
+\subsection{Conics}
+Curve described by 2nd degree equation in plane:
+\[
+    ax^2 +bxy + cy^2 + dx +ey +f = 0
+\]
+or homogenized: $x\mapsto \frac{x_1}{x_3}, y\mapsto \frac{x_2}{x_3}$
+\[
+    ax_1^2 + bx_1x_2+cx_2^2+dx_1x_3+ex_2x_3 + fx_3^2 = 0
+\] or in matrix form:
+\[
+    \mathbf x^\top \mathbf C \mathbf x = 0 \text{ with } \mathbf C =\begin{bmatrix}
+        a & b/2 & d/2 \\
+        b/2 & c & e/2 \\
+        d/2 & e/2 & f
+    \end{bmatrix} 
+\]
+5DOF (ratios b/w distinct elements)
+\subsubsection{Find Conics}
+5 points define a conic;
+\[
+    [x_i^2, x_i, y_i, y_i^2, x_i, y_i, 1] \cdot \mathbf c \ \ \ \ \ \mathbf c = [a,b,c,d,e,f]^\top
+\]
+Stacking contraints yields:
+\[
+    \begin{bmatrix}
+        x_1^2 & x_1y_1 & y_1^2 & x_1 & y_1 & 1 \\[5pt]
+        x_2^2 & x_2y_2 & y_2^2 & x_2 & y_2 & 1 \\[5pt]
+        x_3^2 & x_3y_3 & y_3^2 & x_3 & y_3 & 1 \\[5pt]
+        x_4^2 & x_4y_4 & y_4^2 & x_4 & y_4 & 1 \\[5pt]
+        x_5^2 & x_5y_5 & y_5^2 & x_5 & y_5 & 1
+    \end{bmatrix}\mathbf c = 0
+\]
+
+\subsubsection{Tangent Lines to Conics}
+The line $\mathbf l$ tangent to $\mathbf C$ at point $\mathbf x$ on $\mathbf C$ is given
+by $\mathbf l = \mathbf C \mathbf x$ 
+\[
+    \mathbf x_0 ^\top \mathbf C \mathbf x = 0
+\]
+
+\subsubsection{Dual Conics}
+Line tangent to conic $\mathbf C$ statisfies $\mathbf l^\top \mathbf C^* \mathbf l =0$
+\\
+In general ($\mathbf C$ full rank) - $\mathbf C^* = C^{-1}$
+\\
+Dual conics = line conics = convic envelope
+\subsubsection{Degneerate Conics}
+Conic \textbf{degenerate} iff matrix $\mathbf C$ is not full rank
+\\
+Degenerate line conics: 2 points (rank 2), double point (rank 1)\\
+For degen conics: $(\mathbf C^*)^* \ne \mathbf C$ 
+
+
+\section{Lecture - Feb 6}
+\subsection{Lines}
+Line b/w 2 points is cross product of the points; point intersecting 2 lines 
+is cross product of lines.
+\\
+Parallel lines (distinct at small scale) become indistinguishable at infinity.
+
+
+\subsection{Projective Transformation}
+\begin{definition}
+    {Projectivity}{}
+    Projectivity is an invertible mapping $h$ from $\mathbb P^2$ to itself s.t. 
+    three points $\mathbf x_1,\mathbf x_2,\mathbf x_3$ lie on the same line iff $h(x_1), h(x_2), h(x_3)$
+    do
+\end{definition}
+
+\begin{thm}
+    {}{}
+    Mapping $h: P^2 \to P^2$ is a projectivity iff there exists a 
+    nonsingular $3\times 3$ matrix $H$ s.t. for any point in $P^2$ represented by a 
+    vector $\mathbf x$, it is true that $h(\mathbf x) = H\mathbf x$
+\end{thm}
+
+% \begin{example}
+%     {State Space Model}{}
+%     Track corners, homography from corner
+% \end{example}
+
+
+% \subsection{Planar texture Variability}
+% Proj. Var - computational issues when solving for all $\Delta$ params. (unstable)
+
+
+% \subsection{Mapping b/w Planes}
+% diff plane $\to$ diff numerical coord, but homography still exists 
+
+% \subsection
+\noindent
+Transforming Lines:
+\[
+    \mathbf l ' = H^{-\top} \mathbf l
+\]
+% cond number is how collinear stuff is
+\noindent
+affine - parallelism\\
+metric - orthogonalism\\
+euclidian - absolute scale
+
+% \subsubsection{Planar Projective Warping}
+
+
+\subsubsection{Affinity and Projectivity on line at inf}
+Affine preserves $0$ (stays at infinity)\\
+Projectivity changes $0$, line at infinity potentionally becomes finite
+\begin{thm}
+    {}{}
+    Line at infinity is a fixed line under a projective transformation $H$ iff
+    $H$ is affinity.\\
+    Affine transformation is one that preserves line at infinity
+\end{thm}
+\noindent
+Rectification/post-processing to get line at infinity back (fix parallel lines) after
+projective. 
+
+\subsection{Affine Rectification}
+Take img, get parallel lines, construct $v_1,v_2$ as intersections for 2 sets of 
+parallel lines, intersescted points on $\mathbf l_\infty$
+\[
+    \mathbf l_\infty = [l_1, l_2, l_3]
+\]
+% \\
+\noindent
+Fix 2 DOF relating to projective geometry, undo projective part of transformation;
+just get affine part 
+\[
+    H_{PA} = \begin{bmatrix}
+        1 & 0 & 0 \\
+        0 & 1 & 0 \\
+        l_1 & l_2 & l_3
+    \end{bmatrix} H_A
+\]
+
+\subsubsection{}
+\[
+    x_i' = Hx_i
+\]\noindent
+Want to show that the points are collinear
+\[
+   \lambda  
+   \begin{bmatrix}
+    x' \\ y' \\ w'
+   \end{bmatrix} =
+   \begin{bmatrix}
+    h_{11} & h_{12} & h_{13} \\
+    h_{21} & h_{22} & h_{23} \\
+    h_{31} & h_{32} & h_{33}
+   \end{bmatrix}
+   \begin{bmatrix}
+    x \\y \\ 1
+   \end{bmatrix}
+\] 
+\noindent
+2 independent eq / point; 8DOF for projective $\to$ 4 points needed
+
+
+\subsection{DLT}
+Estimate $H$; $Hx_i$ involves homogenous vectors
+vectors, $H_ix$ and $x_i$ need only be in the same direction and not strictly equal
+\[
+    \begin{bmatrix}
+        x \\ 1
+    \end{bmatrix} \equiv \begin{bmatrix}
+        \lambda x \\ \lambda
+    \end{bmatrix}
+\]
+\noindent
+Specify "same directionality" via cross product formulation
+\[
+    x_i' \times Hx_i = 0
+\]
+Conditioning of $A$ isn't good in general
+\\
+Minimizes
+\[
+    \| Ah \|
+\]
+$e = Ah$ (residual)
+
+\subsubsection{Importance of Normalization}
+Order of magnitudes different, close to singular (poorly conditioned).\\
+Normalize so centroid is origin, rescale points to be w/in 1.
+\\
+Improve numerical problems. \\
+Denormalize solution to get pixel coordinates.
+
+\subsubsection{Degen. Config}
+Avoid having more than 3 collinear points. \\
+Typically want 4 points clustered
+
+
+\subsection{Parameter Estimation}
+trifocal tensor - relate point w/ 3 imgs (not covered in class)
+
+\subsubsection{Solving LS}
+if $m=n$ then
+\[
+    \mathbf x = \mathbf A^{-1} \mathbf b
+\]
+\noindent
+if $m > n$, overconstrained, cant invert; use LSS (via QR or pseudoinverse)
+
+\subsubsection{Homogenous Sys. of Eq}
+Solve $A\mathbf x = 0$, trivial sol $\mathbf x=\vec 0$ but don't want to use this. Find other vals.
+\\
+Solve via SVD ($A = UDV^\top$), with $\mathbf x$ as the \textbf{last column} of $V$
+
+
+
+\subsubsection{Inhomogenous sol}
+assumes $h_9 = 1$, wont work if we want to have horizon in center 
+
+
+
+
+
+
+
+
+
+\end{document}

@@ -1,0 +1,151 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage{enumitem}
+\usepackage{graphics}
+\usepackage{bbm}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\setenumerate[1]{label=\Roman*.}
+\setenumerate[2]{label=\Alph*.}
+\setenumerate[3]{label=\roman*.}
+\setenumerate[4]{label=\alph*.}
+
+\title{CMPUT 428: Visual Servoing}
+\author{Roderick Lan}
+% \date{January 11, 2024}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Expln}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{ovr}{Overview}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10!white!50
+}{ovr}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{refer}{Reference}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{refer}
+\begin{document}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{thm}{Thm}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{thm}
+
+% \setcounter{section}{1}
+\maketitle
+\tableofcontents
+\break
+% \section*{Lecture 1}
+
+\section{Lecture - Feb 8}
+lec10VisServEmbVid.pdf
+\subsection{Vision Based Control (Visual Servoing)}
+Robot acting in Euclidean space, gonna be in some manifold of projective space.
+\\
+4 points give homogrpahy, homography not necessarily euclidean, leverage the fact that the 
+top is in euclidean space, \dots
+\\
+If full motion isnt convex, there exists some subdivision of motion that is convex $\to$ 
+intermediate goal points w/ convex subsections of motion.
+
+\subsection{Problems}
+Chaining transforms $\to$ accumulate errors
+% \\
+% Can formulate ()
+% \\
+\subsection{}
+Use broyden's method for optimization (dont need to calc. deriv.)
+\\
+error $y=f(x)$ is visual error, assume it is smooth convex func. \\
+Getting Jacobian: can always get discrete deriv 
+(ie. deriv b/w frames in optical flow)
+\begin{list}{}{}
+    \item move joint 1 (up to $10\degree$), get all partial derivs for joint
+    \item do same for other joints
+    \item fill in jacobian 
+\end{list}
+\subsection{Find J Method 2}
+For every motion, jacobian should obey "secant constraint"
+\begin{list}{}{}
+    \item get 'constraints' from joint motion
+    \item stack into matrix, fit $J$
+\end{list}
+
+\subsection{Find J Method 3}
+Recursive Secant constraints\\
+iterative secant update for jacobian (Broyden)
+
+
+\subsection{Specifications}
+image encoding $E(y) =0$\\
+Guarantee that you're actually solving the problem (ie. objects are actually touching
+and don't just look like they are due to perspective)
+\\
+(task ambiguity)
+
+
+
+
+
+
+\end{document}

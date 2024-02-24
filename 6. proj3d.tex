@@ -1,0 +1,413 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage{enumitem}
+\usepackage{graphics}
+\usepackage{bbm}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% \setenumerate[1]{label=\Roman*.}
+% \setenumerate[2]{label=\Alph*.}
+% \setenumerate[3]{label=\roman*.}
+% \setenumerate[4]{label=\alph*.}
+
+\title{CMPUT 428: 3D Projective Geometry}
+\author{Roderick Lan}
+% \date{January 11, 2024}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Expln}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{ovr}{Overview}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10!white!50
+}{ovr}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{refer}{Reference}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{refer}
+\begin{document}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{thm}{Thm}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{thm}
+
+% \setcounter{section}{1}
+\maketitle
+\tableofcontents
+\break
+% \section*{Lecture 1}
+
+\section{Lecture - Feb 13}
+lec06Proj3D.pdf\\[5pt]
+Points:
+\[
+  \mathbf X = (x_1, x_2, x_3, x_4); x_4 \ne 0
+\]
+Point at inf:
+\[
+  (x_1, x_2, x_3, 0)
+\]
+Planes:
+\[
+  \mathbf \pi = (\pi_1, \pi_2, \pi_3 \pi_4)
+\]
+Plane at inf:
+\[
+  \mathbf \pi^\top \mathbf X = 0
+\]
+proj transform $\to$ $4\times 4$ nonsingular matrix $H$\\
+Point Transformation: $X' = HX$
+\\
+Plane Transformation: $\pi' =H^{-\top }\pi$
+\\[5pt]
+3D point:\\
+$(X,Y,Z)^\top$ in $\mathbb R^3$
+\\
+$X = (X_1, X_2, X_3, X_4)$ in $P^3$
+\\[5pt]
+Euclidean Rep:
+% \\
+\[
+  n^\top \tilde X + d = 0
+\]
+$
+n = (\pi_1, \pi_2, \pi_3)^\top
+$, $\tilde X = (X,Y,Z)^\top $
+\\
+$\pi_4 = d$, $X_4 = 1$
+\\
+$d$ is distance
+\subsection{Planes from Points}
+Solve $\pi$ for:
+\[
+  \mathbf X_1^\top \pi = 0, \mathbf X_2^\top \pi = 0, \text{ and }, \mathbf X_3^\top \pi = 0
+\]
+(use SVD)\\
+or implicitly \textbf{Coplanarity Condition} (check slides)
+\\[5pt]
+Canonical Form:
+\\
+If we have a plane, we can get nullspace span $\mathbf M= \begin{bmatrix}
+  p \\ I
+\end{bmatrix}$ 
+\[
+  p = \begin{bmatrix}
+    -\frac{b}{a}, -\frac{c}{a}, -\frac{d}{a}
+  \end{bmatrix}^\top
+\]
+
+\subsection{Points from Planes}
+Solve $\mathbf X$ from
+\[
+  \pi_1 ^\top \mathbf X=0, \pi_2 ^\top \mathbf X=0, \text{ and } \pi_3 ^\top \mathbf X=0
+\]
+
+\subsection{Lines}
+Join of two points ($A,B$)
+\[
+  W =\begin{bmatrix}
+    A^\top \\
+    B^\top
+  \end{bmatrix}, \lambda A + \mu B
+\]
+\\
+Intersection of two planes ($P,Q$)
+\[
+  W^* =\begin{bmatrix}
+    P^\top \\
+    Q^\top
+  \end{bmatrix}, \lambda P + \mu Q \text{ "pencil of planes"}
+\]
+pencil of planes - all the planes that could generate an intersection of this line
+\[
+  W^* W^\top = WW^{*\top} = 0_{2\times 2}
+\]
+\\[10pt]
+Define basis/direction vectors as pure direction ($x_4=0$) rather than a finite point
+\\
+$W$ is $2\times 4$
+
+\subsection{Points, lines, planes}
+Join of point $X$ and line $W$ is plane $\pi$
+\[
+  \mathbf M = \begin{bmatrix}
+    W \\ X^\top
+  \end{bmatrix} \ \ \ \mathbf M \pi = 0
+\]
+Intersection of line $W$ with plane $\pi$ is point $X$
+\[
+  \mathbf M = \begin{bmatrix}
+    W^* \\ \pi ^\top
+  \end{bmatrix} \ \ \ \mathbf MX = 0
+\]
+
+\subsection{Affine space}
+Difficulties with a projective space:
+\begin{outline}
+  \1 Nonintuitive notion of direction
+  \2 Parallelism not represented
+  \2 Restore parallelism $\to$ need to know/fix some affine property
+  \1 Infinity not distinguished
+  \1 No notion of "inbetweenness"
+  \2 Projective lines are topologically circular
+  \1 Only cross-ratios are available
+  \2 Ratios are required for many practical tasks
+\end{outline}
+% \\[5pt]
+Solution:\\
+Find the point at infinity
+\[
+  \pi_\infty = (0,0,0,1)
+\]
+Transform model to give $\pi_\infty$ canonical coords
+\\
+2D analogy: fix horizontal line $\mathbf l_\infty = (0,0,1)$
+\\[5pt]
+\noindent\rule{\textwidth}{0.5pt}
+\subsubsection{Proj to Affine}
+Get "parallel" lines in img, find projective transformation that would make 
+lines parallel\\[5pt]
+\noindent\rule{\textwidth}{0.5pt}
+\\[15pt]
+Affine transformation:
+\[
+  H_A = \begin{bmatrix}
+    a_{11} & a_{12} & a_{13} & a_{14} \\
+    a_{21} & a_{22} & a_{23} & a_{24}\\
+    a_{31} & a_{32} & a_{33} & a_{34} \\
+    0 & 0 & 0 & 1
+  \end{bmatrix}
+\]
+12 DOF, $\pi_\infty$ unchanged
+\\
+Invariants:
+\begin{list}{}{}
+  \item Ratio of lengths on a line
+  \item Ratios of angles
+  \item Parallelism
+\end{list}
+
+\subsection{Metric Space}
+Metric transformation (similarity)
+\[
+  H_S = \begin{bmatrix}
+    sR & \mathbf t\\
+    \mathbf O^t & 1
+  \end{bmatrix}
+\]
+7DOF, maps absolute conic to itself
+\\
+Invariants:
+\begin{list}{}{}
+  \item Length ratios
+  \item Angles
+  \item Absolute conic
+\end{list}
+Highest level of geometric structure that can be retrived from images 
+(without yard stick/ruler)
+
+\begin{ovr}
+  {Main Takeaway of 428}{}
+  "Stratified Geometry" vs Euclidean Geometry
+\end{ovr}
+\noindent
+Euclidean geometry is not the only repr for:
+\begin{enumerate}
+  \item building models from imgs
+  \item building imgs from models
+\end{enumerate}
+When 3D realism is the goal; how can we effectively build and use projective,
+affine, metric representations.
+
+
+
+
+
+
+
+
+
+
+
+\section{Lecture - Feb 15}
+lec08Proj, 
+lec06Proj3D;
+\textbf{READ SLIDES!!!!!!!!!}\\[5pt]
+Projections - use similar triangles
+\\
+Camera matrix\[
+  \begin{bmatrix}
+    U \\ V \\ W
+  \end{bmatrix}
+  = \begin{bmatrix}
+    1 & 0 & 0 & 0\\
+    0 & 1 & 0 & 0\\
+    0 & 0 & 1/f & 0
+  \end{bmatrix}
+  \begin{bmatrix}
+    X \\ Y \\ Z \\ W
+  \end{bmatrix}
+\]
+\[
+  \begin{bmatrix}
+    U \\ V\\ W
+  \end{bmatrix}\approx
+  \begin{bmatrix}
+    f & 0 & 0 & 0\\
+    0 & f & 0 & 0\\
+    0 & 0 & 1 & 0
+  \end{bmatrix}
+  \begin{bmatrix}
+    X \\ Y \\ Z \\ W
+  \end{bmatrix}
+\]
+\[
+  (U,V,W) \to \left ( \frac{U}{W}, \frac{V}{W} \right ) = (u,v)
+\]
+\\[10pt]
+when coord sys not aligned, $P$ becomes arbitrary singular or nonsingular matrix
+\[
+  x = PX
+\]
+
+
+\subsection{Intrinsic Parameters}
+Conversion from metric to pixel coords (and reverse)
+\[
+  x_{\mathrm{mm}} = -(x_{\mathrm{pix}}- o_x )s_x 
+\]
+\[
+  y_{\mathrm{mm}} = -(y_{\mathrm{pix}}- o_y )s_x 
+\]
+
+\[
+  \begin{bmatrix}
+    x \\ y \\ w
+  \end{bmatrix}_{\mathrm{pix}}
+  =
+  \begin{bmatrix}
+    -f/s_x & 0 & o_x \\
+    0 & -f/s_y & o_y \\
+    0 & 0 & 1
+  \end{bmatrix}
+  \begin{bmatrix}
+    x \\ y \\ w
+  \end{bmatrix}_{\mathrm{mm}} = \mathbf M_{\mathrm{int}}\mathbf p
+\]
+\begin{expln}
+  {}{}
+  $f$ is focal length (mm); $s$ is scale factor (aspect ratios), $o$ center coords
+\end{expln}
+
+
+\subsection{Relative Location (cam/laser)}
+create homog transforms that represent the alignments;\\
+camera interal params from manufacturers\\
+first matrix via calibration eq.\\
+Internal params = known information; need to find ext. params (unknown)
+
+
+\subsection{Diff Cam Models}
+Orthographic $\to$ pure parallel projection\\
+Weak Perspective $\to$ parallel projection onto imaginary plane (obj plane)
+and then perspective transformation. (single scaling factor)
+\\
+Paraperspective $\to$ 
+\\
+Perspective $\to$
+
+\subsection{Weak Perspective}
+Uses a scaling factor $T$
+\[
+  u = Tx, v = Ty, T=f/Z
+\]
+$Z$ is the \textbf{average} depth
+
+\[
+  \begin{bmatrix}
+    U \\ V\\ W
+  \end{bmatrix} =
+  \begin{bmatrix}
+    1 & 0 & 0 & 0
+    \\
+    0 & 1 & 0 & 0\\
+    0 & 0 & 0 & f/Z^*
+  \end{bmatrix}
+  \begin{bmatrix}
+    X \\ Y \\ Z \\ T
+  \end{bmatrix}
+\]
+$Z^*$ fixed val, usually mean/centroid distance
+
+
+\subsection{Full Affine Linear Camera}
+factor into rotation part and scale part (?)
+
+
+\subsection{Camera Models}
+
+
+
+
+\end{document}
+

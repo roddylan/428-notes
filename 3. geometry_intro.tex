@@ -1,0 +1,298 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage{enumitem}
+\usepackage{graphics}
+\usepackage{bbm}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\setenumerate[1]{label=\Roman*.}
+\setenumerate[2]{label=\Alph*.}
+\setenumerate[3]{label=\roman*.}
+\setenumerate[4]{label=\alph*.}
+
+\title{CMPUT 428: Tracking}
+\author{Roderick Lan}
+% \date{January 11, 2024}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Expln}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{ovr}{Overview}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10!white!50
+}{ovr}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{refer}{Reference}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{refer}
+\begin{document}
+
+% \setcounter{section}{1}
+\maketitle
+\tableofcontents
+\break
+% \section*{Lecture 1}
+
+\section{Lecture - Jan 30}
+lec06GeomIntro.pdf\\
+Image prediction is nonlinear.
+(Pinhole) Camera collects light rays, projected onto plane (upside down).
+\[
+    (x,y,z ) \to \left ( f\frac{x}{z}, f \frac{y}{z}\right )
+\]
+or Projectively: $x = PX$\\
+3D $\to$ 2D plane.\\
+Choice (and positioning) of coordinate system very important, 
+can simplify problem a lot. (we project img onto new coordinate system?)
+
+\subsection{Matrix Rep. + Homogenous Coords}
+Chain transformations together to build total transformation.
+Good if all transformations can be represented as matrix mult. 
+(comb. of transformation only involves mult. of matrices); Affine 
+involves addition and multiplication. Translations don't have $2\times 2$, 
+use Homogenous Coords to get $3\times 3$ matrix rep for transformation. 
+\\
+Append extra coords to 2D:
+\[
+    \begin{bmatrix}
+        x' \\ y'
+    \end{bmatrix} = \begin{bmatrix}
+        x \\ y
+    \end{bmatrix} + \begin{bmatrix}
+        \Delta x \\ \Delta y
+    \end{bmatrix}
+    \Rightarrow
+    \begin{bmatrix}
+        x'\\
+        y'\\
+        1
+    \end{bmatrix} = 
+    \begin{bmatrix}
+        1 & 0 & \Delta x\\
+        0 & 1 & \Delta y\\
+        0 & 0 & 1
+    \end{bmatrix} \begin{bmatrix}
+        x\\y\\1
+    \end{bmatrix}
+\]
+$\mathbb R^4$ space sufficient for all Euclidean operaitons. 
+
+\subsubsection{General Case}
+Homog coord corresponding to $(x,y,z)$ is the triple $(x_h, y_h, z_h, w)$ s.t.
+\begin{flalign*}
+    x_h &= wx\\
+    y_h &= wy\\
+    z_h &= wz
+\end{flalign*}
+Initially set $w=1$. May perform differently w/ transformations (?)
+\subsubsection{Transformations}
+Translation:
+\[
+    P' = \begin{bmatrix}
+        x' \\ y' \\ z' \\ w 
+    \end{bmatrix} = \begin{bmatrix}
+        1 & 0 & 0 & T_x\\
+        0 & 1 & 0 & T_y\\
+        0 & 0 & 1 & T_z\\
+        0 & 0 & 0 & 1\\
+    \end{bmatrix} \begin{bmatrix}
+        x \\ y\\ z \\ w
+    \end{bmatrix}
+\]
+Scaling:
+Translation:
+\[
+    P' = \begin{bmatrix}
+        x' \\ y' \\ z' \\ w 
+    \end{bmatrix} = \begin{bmatrix}
+        s_x & 0 & 0 & 0\\
+        0 & s_y & 0 & 0\\
+        0 & 0 & s_z & 0\\
+        0 & 0 & 0 & 1\\
+    \end{bmatrix} \begin{bmatrix}
+        x \\ y\\ z \\ w
+    \end{bmatrix}
+\]
+Using general idea of Homog. Transformation:
+\[
+    p' = \begin{bmatrix}
+         &R & &T\\
+        0 &0 & 0 & 1
+    \end{bmatrix}
+\]
+Inverse:
+\[
+    p = \begin{bmatrix}
+        &R' & &-R'T\\
+        0 &0 & 0 & 1
+    \end{bmatrix}
+\]
+(gen. rotation in slides (42))
+
+\subsection{Rotation abt Specified Axis}
+Useful to rotate about any axis in 3D space $\to$ compose 7 elementary transformations.
+\\
+Issue w/ just rotating: rotates about origin (object 'translates' and rotates).
+Need to center object and align w/ coordinate system. (often times rotate on z axis).
+\begin{center}
+    \includegraphics*[width=.8\textwidth]{"imgs/rotation spec axis.png"}
+\end{center}
+
+\subsection{Basic Transformations}
+Translation, scaling, etc.\\
+Scaling be rewritten for fixed point.
+
+\subsection{Camera Matrix}
+\[
+    (U,V,W) \to \left ( \frac{U}{W}, \frac{V}{W}\right ) = (u,v)
+\]
+\begin{expln}
+    {}{}
+    $W$ is often called the \textbf{scale factor}
+\end{expln}\noindent
+Homog Coords for 3D:
+\[
+    \begin{bmatrix}
+        U \\ V \\ W
+    \end{bmatrix} = \begin{bmatrix}
+        1 & 0 & 0 & 0\\
+        0 & 1 & 0 & 0\\
+        0 & 0 & \frac{1}{f} & 0
+    \end{bmatrix}\begin{bmatrix}
+        X\\Y\\Z\\T
+    \end{bmatrix}
+\]
+coord sys not aligned:
+\begin{list}{-}{}
+    \item projective (proj coords $\times$ arbitrary ($3\times4$) matrix $P$)
+        \\$x=PX$
+    \item euclidean\\$x=[R|T]X$
+\end{list}
+\begin{expln}
+    {}{}
+    Projective geometry preserves collinearity
+\end{expln}\noindent
+
+\subsection{Intersection (preview)}
+can extend when we know img in plane and where camera is geometrically.
+\\
+need tracking for complex imgs (very important for correspondence)
+
+\subsection{SFM (preview)}
+Only have (unorganized) imgs, dont know where they were taken from. Multiple
+images of same 3d object is redundant (?)   
+
+\subsection{N-view geometry; Affine Factorization}
+stack points in measurement matrix $W$, perform SVD (heath ch3), get
+mathematically equivalent camera position ($\hat M$) and points ($\hat X$)
+\\
+$W = UDV^\top$ \\
+$\hat W = U_{2m\times 3}D_{3\times 3}V^\top_{n\times 3} = \hat M \hat X$
+\[
+    W = \begin{bmatrix}
+        \tilde x_1^1 & \cdots & \tilde x_n^1 \\
+        \vdots & \ddots & \vdots\\
+        \tilde x_1^m & \cdots & \tilde x_n^m
+    \end{bmatrix} = \begin{bmatrix}
+        M^1 \\ \vdots \\ M^m
+    \end{bmatrix}
+    \begin{bmatrix}
+        x_1 & \cdots & x_n
+    \end{bmatrix}
+\]
+
+\subsection{Limitations in images}
+distant objects smaller; img prediction can rearrange position and scale arbitrarily
+(can't trust size relationships)\\
+Visual ambiguity.
+\\[10pt]
+Parallel lines meet at a point in projective geometry (vanishing point)
+\subsection{Invariants}
+Things that stay the same after every projective transform
+\begin{list}{-}{}
+    \item points map to points
+    \item intersections are preserved (not necessarily at the same real/metric distances)
+    \item lines map to lines
+    \item collinearity preserved
+    \item ratio of ratios (cross ratio); relative distances (no abs. distance)
+    \item horizon
+\end{list}
+
+
+\subsection{Vanishing points}
+Each set of parallel ines (direction) meets at a diff. point - \textbf{vanishing point}
+for this direction.
+\\
+Sets of parallel lines on same plane lead to \textbf{collinear} vanishing point (\textbf{horizon} for that plane)
+
+\subsection{Geometric Properties of Projection}
+\begin{list}{-}{}
+    \item points go to points
+    \item lines go to lines
+    \item (mathematical) planes go to whole img
+    \item polygons go to polygons
+\end{list}
+Degenerate cases:
+\begin{list}{-}{}
+    \item line through focal point to point
+    \item plane through focal point to line
+\end{list}
+
+
+
+\end{document}
