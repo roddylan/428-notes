@@ -1,0 +1,317 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage{enumitem}
+\usepackage{graphics}
+\usepackage{bbm}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% \setenumerate[1]{label=\Roman*.}
+% \setenumerate[2]{label=\Alph*.}
+% \setenumerate[3]{label=\roman*.}
+% \setenumerate[4]{label=\alph*.}
+
+\title{CMPUT 428: 3D Modelling}
+\author{Roderick Lan}
+% \date{January 11, 2024}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Expln}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{ovr}{Overview}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10!white!50
+}{ovr}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{refer}{Reference}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{refer}
+\begin{document}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{thm}{Thm}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{thm}
+
+% \setcounter{section}{1}
+\maketitle
+\tableofcontents
+\break
+% \section*{Lecture 1}
+
+\section{Lecture - Feb 29}
+lec07modeling18EmbMedia.pdf\\[5pt]
+3D from video is:
+\begin{outline}
+    \1 inexpensive
+    \1 quick and convenient for the user
+    \1 integrates with existing software (ie. maya, blender, c4d, ue4, etc.)
+\end{outline}
+\subsection{Prelims; Macro Geometry}
+Shape from silhouettes:
+\begin{list}{}{}
+    \item more = better
+    \item provides good starting approx. for object
+\end{list}
+Structure from motion: % photogrammetry
+\begin{list}{}{}
+    \item uses triangulations to get 3d points
+    \item can be done with 'unstructured' imgs/scene (ie. from phone camera)
+    % \item 
+\end{list}
+
+
+\subsection{Fundamental Problems}
+\begin{enumerate}
+    \item \textbf{Resection} of 3D camera matrices
+    \item \textbf{Intersection}
+    \item \textbf{Structure From Motion (SFM)}
+\end{enumerate}
+
+\subsubsection{Resection}
+Projection Equation:
+\[
+    x_i = P_i X
+\]
+Resection:
+\[
+    x_i, X\to P
+\]
+Imagine you have $x$ (ie. 3d model) and image $x_i$ (projection of points on img). 
+Finding camera = finding projection of rays that map 3d point to image point.
+\\
+Can have many potential camera planes that all map (?)
+
+
+\subsubsection{Intersection}
+Projection Equation:
+\[
+    x_i = P_i X
+\]
+Intersection:
+\[
+    x_i, P_i \to X
+\]
+Have $\ge 2$ cameras; projections in $\ge 2$ images. Intersect rays to get 3d points. 
+\\
+Need to 'know' the camera properties. 
+
+\subsubsection{SFM}
+Projection Equation:
+\[
+    x_i = P_i X
+\]
+Structure From Motion (SFM):
+\[
+    x_i \to P_i, X
+\]
+Get image predictions ($x_i$) from point tracking.
+\\
+Get image points in $\ge 2$ views, calculate 3d points (structure) and 
+camera projection matrices (motion)
+\\
+Estimate projective structure\\
+Rectify the reconstruction to metric (autocalibration)
+\\
+(dont know the cameras; figure out constraints)
+
+\subsection{Seq. 3D Structure From Motion}
+Use 2 and 3 view geometry
+\begin{outline}[enumerate]
+    \1 Initialize structure and motion from 2 views
+    \1 for each additional view:
+        \2 determine pose
+        \2 refine and extend structure
+    \1 determine correspondences robustly by jointly estimating matchies and epipolar constraints
+\end{outline}
+\subsection{2 View Geometry}
+2 points in views $x_i$, comes from 3d point $X$. If you have camera center, know that ray 
+from center to point extends to infinity; $X$ lies somewhere on ray. 
+\\
+line connecting camera centers
+\\
+epipole - intersecting point b/w line and image plane
+\\
+epipolar line - line b/w imaged $x_i$ and epipole
+\subsubsection{Epipolar Geometry}
+C, C' x, x' and X are coplanar
+\\
+Epipolar geometry exists independent of 3d point, only related to camera and 2d point
+projections.
+\\
+% Dont know $X$, argue that 
+There is a family of epipolar planes \\
+Epipolar lines go towards parallel lines
+\\
+Family of planes and lines intersect infinitely far apart.
+\\
+Epipoles ($e, e'$) can be finite or infinite
+\begin{list}{}{}
+    \item intersection of baseline with img plane
+    \item projection of projection center in other img
+    \item vanishing point of camera motion direction
+\end{list}
+Epipolar plane - plane containing baseline (1D family)
+Epipolar line - intersection of epipolar plane with image 
+
+\begin{example}
+    {Parallel Motion with img plane}{}
+    Epipoles at infinity
+\end{example}
+% optic flow must lie on epipolar lines
+% \begin{example}
+%     {Forward motion}{}
+
+% \end{example}
+
+\subsection{Fundamental Matrix}
+Algebraic representation of epipolar geometry.
+\[
+    \mathbf x \mapsto \mathbf l'
+\]
+This mapping is a singular correlation; represented by fundamental matrix $F$
+\\
+$3 \times 3$ matrix with 7 dof (8 independent ratios)
+
+\subsubsection{Algebraic Derivation}
+Let $x$ be $PX$
+\begin{flalign*}
+    P^{+}x &= P^{+}P X
+    \intertext{Say that pseudoinverse represents line from center to point}
+    \mathbf X(\lambda) &= \mathbf P^+ \mathbf x + \lambda \mathbf C \\
+    \mathbf l' &= \mathbf{P'C} \times \mathbf{P'P^+x} \\
+    F &= [e']_\times P'P^+
+\end{flalign*}
+$\lambda$ is a scalar
+\\
+$[e']_\times$ skew symmetric cross product matrix (rank 2)
+\\
+doesnt work for $C=C' \Rightarrow F=0$ (must have distinct camera centers)
+\\[5pt]
+Alternatively can write:
+\[
+    F = [e']_\times H_\infty
+\]
+\[
+    H_\infty = K^{-1}RK
+\]
+\subsubsection{Geometric Derivation}
+Step 1: $X$ on a plane $\pi$
+\[
+    x' = H_\pi x
+\]
+Step 2: Epipolar line $l'$ 
+\[
+    l' = e' \times x' = [e']_\times H_\pi x = Fx
+\]
+Map from 2D to 1D family (rank 2)
+\\
+(plane $\pi$ can be different for each point, \textbf{unrelated} to epipolar plane)
+
+\subsubsection{Correspondence Condition}
+Exists 2D matrix that ouputs epipolar line.
+\\
+If $\mathbf x'$ lies on $\mathbf l'$, $\mathbf{x' l'} = 0$ 
+\[
+    \mathbf{x' \cdot Fx} = 0
+\]
+
+\noindent\rule{\textwidth}{.5pt}
+\\[15pt]
+$\mathbf F$ is the unique $3 \times 3$ rank 2 matrix that satisfies 
+\[
+    \mathbf{x'^\top Fx} = 0 \ \ \ \ \forall \mathbf x\leftrightarrow \mathbf x'
+\]
+\begin{enumerate}
+    \item \textbf{Transpose}: if $\mathbf F$ is a fundamental matrix for (P, P'), $\mathbf F^\top$
+        is fundamental matrix for (P', P)
+    \item Epipolar Lines: $\mathbf{l' = Fx}$ and $\mathbf{l=F^\top x'}$
+    \item Epipoles: on all epipolar lines, $\mathbf{e'^\top Fx = 0}$ $\forall \mathbf x, 
+    \Rightarrow e'^\top F=0$, similarly $\mathbf{Fe}= 0$
+    \item $\mathbf F$ has 7dof ($3\times 3$ - 1 (homog), - 1 (rank 2))
+    \item $\mathbf F$ is a correlation, projective mapping from a point $\mathbf x$ 
+        to a line $\mathbf{l' = Fx}$ (not a proper corr., ie. not invertible)
+\end{enumerate}
+
+\subsubsection{Summary}
+Algebraic rep. of epipolar geom.
+\\
+Step 1: $\mathbf X$ on plane $\pi$
+\[
+    \mathbf{x' = Hx}
+\]
+Step 2: epipolar line $\mathbf l'$
+\begin{flalign*}
+    \mathbf{l'} &= \mathbf{e' \times x' = [e']_\times x'} \\ &= \mathbf{[e']_\times Hx = Fx}
+\end{flalign*}
+\[
+    \mathbf{x'^\top Fx =0 }
+\]
+
+\subsubsection{Computing F}
+Use 8 points
+\[
+    \mathbf{x'^\top Fx} =0 
+\]
+(SLIDE 43-44)
+
+\end{document}
+
