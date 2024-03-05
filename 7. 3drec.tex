@@ -418,5 +418,34 @@ multiplicative and additive relationships in $A$
 not best for geometric error, good for algebraic error; 
 sufficient to show theres a computational solution for computing 3d
 
+
+\subsection{Ambiguities}
+\textbf{Reconstruction uncertainty} - angles/rays close to colinear $\to$ less
+specific solution space
+
+
+
+\subsection{Refining truct and motion}
+Minimize reprojection error
+\[
+    \min_{\hat P _k, \hat M_i} \sum_{k=1}^{m}\sum_{j=1}^{n}
+    D (m_{kj}, \hat P_k \hat M_i)^2
+\]
+
+\subsection{Proj. ambiguity + self calibration}
+autocalibration (self cal.) - find proj $T$ that upgrades proj. rec. to metric 
+
+
+
+\subsection{Orthographic Factorization}
+first 2 rows = im1, next 2 = im2, \dots
+\\
+trackers on points, move camera, etc.
+\\
+3 first rows in M - 3d structure
+
+\subsection{weak perspective}
+M changes by scale, do same thing as orthog but constraints involve scale 
+
 \end{document}
 
