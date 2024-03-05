@@ -313,5 +313,110 @@ Use 8 points
 \]
 (SLIDE 43-44)
 
+
+
+\section{Lecture - Mar 5}
+\subsection{Fundamental Matrix (Summary)}
+get ray from point, real point could be any point that lies on ray, take 
+multiple imgs and get intersection of rays to find point.
+\\
+% calibrated image - know location of camera
+find mathematical nature of point b/w 2 views (?)
+
+\begin{definition}
+    {$F$}{}
+    $3 \times 3$ Rank 2, $\mathrm{det}(F)=0$\\
+    Linear solution - 8 corr. points (unique)
+    \\
+    Nonlinear sol - 7 corr. points (3 sol)
+    \\
+    Very sensitive to \textbf{noise} and \textbf{outliers} (need to know $x$ and $x'$ very precisely)
+\end{definition}
+\noindent
+Epipolar Lines:
+\[
+    \mathbf l' = F\mathbf x, \ \mathbf l = F^\top \mathbf x'
+\]
+Epipoles:
+\[
+    F\mathbf e = 0, F^\top \mathbf e' = 0
+\]
+Projection Matrices:
+\[
+    P = \begin{bmatrix}
+        I & | & \mathbf 0
+    \end{bmatrix}
+\]
+\[
+    P' = \begin{bmatrix}
+        [\mathbf e']_\times F + \mathbf{e'v^\top} & | & \lambda \mathbf e'
+    \end{bmatrix}
+\]
+
+
+
+\subsection{3D geom and 2D images w/ F}
+$F$ relates to 3 questions:
+\begin{enumerate}
+    \item \textbf{Correspondence geometry} - given img point $x$ in first view, how does 
+    this constrain the position of the corresponding point $x'$ in the second image?
+    \item \textbf{Camera geometry (motion)} - given a set of corresponding img points $\{ x_i \leftrightarrow x_i' \}, i=1,\ldots,n$
+    what are the cameras $P$ and $P'$ for the two views
+    \item \textbf{Scene geometry (structure)} - given corresponding image points $x_i \leftrightarrow x_i'$ and 
+    cameras $P, P'$, what is the position of (their pre-image) $X$ in space
+\end{enumerate}
+\subsection{Compute F}
+(slide 43-44)
+\\
+should normalize pixel values [$0,\sqrt2$]
+\\
+Trifocal tensor - 3 view geom\\
+Quadrifocal tensor - 4 view geom\\
+Multiview tensors\\
+(no additional constraint b/w $>4$ imgs, all constraints can be expressed
+using $F$, triliear tensor or quadrifocal tensor)
+
+
+\subsection{Canonical Cameras given F}
+$F$ matrix corresponds to $P, P'$ iff $P'^\top FP$ is skew symmetric
+\[
+    X^\top P'^\top FPX = 0, \forall X
+\]
+$F$ matrix, $S$ skew symmetric matrix
+\[
+    P = \begin{bmatrix}
+        I & | & 0
+    \end{bmatrix}, P' = \begin{bmatrix}
+        SF & | & e'
+    \end{bmatrix}
+\]
+Possible Choice:
+\[
+    P = \begin{bmatrix}
+        I & | & 0
+    \end{bmatrix} \ \ \ P' = \begin{bmatrix}
+        [e']_\times F & | & e'
+    \end{bmatrix}
+\]
+Canonical Rep:
+\[
+    P = \begin{bmatrix}
+        I & | & 0
+    \end{bmatrix} \ \ \ P' = \begin{bmatrix}
+        [e']_\times F + e'v^\top & | & \lambda e'
+    \end{bmatrix}
+\]
+
+
+\subsection{Struct from imgs}
+compute points, triangulate position.
+
+\subsection{Linear Triangulation}
+(slide 49-51)\\
+multiplicative and additive relationships in $A$
+\\
+not best for geometric error, good for algebraic error; 
+sufficient to show theres a computational solution for computing 3d
+
 \end{document}
 
