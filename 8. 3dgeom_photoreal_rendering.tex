@@ -219,11 +219,76 @@ Texture Chart (ie. text. split + flatten; cut object into pieces and map texture
 
 \noindent\rule{\textwidth}{0.1pt}
 
-\subsection{Dyntex Theory}
+\subsection{Performance}
+Can have many gb of texture memory
+\\
+Key issue: efficient memory access and processing
+\begin{enumerate}
+  \item Macro - conventional geom processing
+  \item Meso - pixel shader; fixed code and variable data access
+  \item Micro - Shader/Registration comb.; fixed code and fixed data access 
+\end{enumerate}
+% \subsection{Dyntex Theory}
+\subsection{Meso Struct}
+Depth with respect ot plane, doesnt work well with just one image (flat texture)
+\subsubsection{Computing Meso}
+Variational shape and reflectance
+Per point cost func:
+\[
+  \mathbf{\phi (X,n)} = \sum_{i} h(\mathbf X, P_i)
+  \|
+  I_i (P_i(\mathbf X)) - R(\mathbf{X, n, L})
+  \|
+\]
+$h$ $\to$ visibility + sampling
+\\
+$R$ $\to$ reflectance
+
+\subsubsection{Rendering Meso}
+% \begin{enumerate}
+%   \item Sample d and ray at $N$ (\textasciitilde 15 pts)
+% \end{enumerate}
+$> 100$ fps for consumer GPU
 
 
+\subsection{Micro Struct}
+Spatial texture basis\\
+Render temporally varying dynamic texture by modulating a linear basis
+\\
+Basis contains spatial derivs of img
+\\
+Rendered by linear blending (?)
+\begin{list}{}{}
+  \item fixed execution and data access pattern
+  \item very fast implementation in graphics hardware
+\end{list}
+Can be done quickly in assembly (register extr.)
 
+\subsubsection{Dynamic Textures}
+3D geom and texture warp map b/w views and texture imgs
+\\[5pt]
+Diff texture img for each view;\\
+A number of different misalignments 
+\\[5pt]
+Planar error - incorrect texture coords
+\\
+Out of plane error - object surface $\ne$ texture plane
+\subsection{Spatial Basis Intro}
+Moving sine wave can be modeled
+\begin{flalign*}
+  I (t) &= \sin (u + at) \\
+  &=\sin(u)\cos(at) + \cos(u)\sin(at) \\
+  &=\sin(u)y_1(t) + \cos(u)y_2(t)
+\end{flalign*}
+$u$ spatially fixed basis
+\\[5pt]
+Small image motion
+\[
+  I = I_0 + \frac{\partial I}{\partial u} \Delta u + \frac{\partial I}{\partial v}\Delta v
+\]
 
+\subsection{Linear basis for spatio-temporal variation}
+% On the obj. 
 
 \end{document}
 
