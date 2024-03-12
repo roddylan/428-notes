@@ -11,6 +11,8 @@
 \usepackage{enumitem}
 \usepackage{graphics}
 \usepackage{bbm}
+% \usepackage{hhline}
+
 \hypersetup{
     colorlinks,
     citecolor=black,
@@ -446,6 +448,163 @@ trackers on points, move camera, etc.
 
 \subsection{weak perspective}
 M changes by scale, do same thing as orthog but constraints involve scale 
+
+
+
+\section{Lecture - Mar 7}
+\subsection{Factorization Method Derivation}
+2 Steps:
+\begin{enumerate}
+    \item Show Existence/Mathematical Structure of Prblm
+    \item How do we apply to data
+\end{enumerate}
+(see notebook)
+\begin{flalign*}
+    \begin{bmatrix}
+        U\\V\\W
+    \end{bmatrix} &=
+    \begin{bmatrix}
+        1 & 0& 0&0 \\
+        0 & 1 & 0 & 0\\
+        0 & 0 & 0 & 1
+    \end{bmatrix} 
+    \begin{bmatrix}
+        \mathbf R & \mathbf t \\
+        \mathbf 0 & 1
+    \end{bmatrix}
+    \begin{bmatrix}
+        X \\ Y \\ Z \\ 1
+    \end{bmatrix} \\
+    \begin{bmatrix}
+        u \\ v\\ w
+    \end{bmatrix} &=
+    \begin{bmatrix}
+        r_1^\top & t_1\\
+        r_2^\top & t_2 \\
+        0^\top & 1
+    \end{bmatrix}\begin{bmatrix}
+        X \\ Y \\ Z
+    \end{bmatrix} =
+    \begin{bmatrix}
+        r_1^\top \\ r_2^\top
+    \end{bmatrix}\begin{bmatrix}
+        X \\ Y \\ Z
+    \end{bmatrix} + \begin{bmatrix}
+        t_1 \\ t_2
+    \end{bmatrix}
+    % 
+    \intertext{Zero mean data $\to$ remove translation; centered coord:}
+    \begin{bmatrix}
+        \vec u_{ij} \\ \vec v_{ij}
+    \end{bmatrix} = 
+    \begin{bmatrix}
+        \vec u_{ij} - \text{mean $u$} \\ \vec v_{ij} - \text{mean $v$}
+    \end{bmatrix}
+    \intertext{Const. equation}
+\end{flalign*}
+Let
+\[
+    \vec m_{ij} = \begin{bmatrix}
+        u_{ij} \\ v_{ij}
+    \end{bmatrix} =\begin{bmatrix}
+        r_1 ^\top \\ r_2^\top 
+    \end{bmatrix} \begin{bmatrix}
+        X \\ Y \\ Z
+    \end{bmatrix} = [P] [M_j]
+\]
+\begin{flalign*}
+    \intertext{Many pts, $Im_1$}
+    \begin{bmatrix}
+        u_{11} & u_{12} & \cdots & u_{1n} \\
+        v_{11} & v_{12} & \cdots & v_{1n}
+    \end{bmatrix} &= P_1 \begin{bmatrix}
+        M_1 & M_2 & \cdots & M_n
+    \end{bmatrix}
+    \intertext{$Im_2$}
+    \begin{bmatrix}
+        u_{21} & u_{22} & \cdots & u_{2n} \\
+        v_{21} & v_{22} & \cdots & v_{2n}
+    \end{bmatrix} &= P_2 \begin{bmatrix}
+        M_1 & M_2 & \cdots & M_n
+    \end{bmatrix}\\
+    &\vdots
+    \intertext{$Im_m$}
+    \begin{bmatrix}
+        u_{m1} & u_{m2} & \cdots & u_{mn} \\
+        v_{m1} & v_{m2} & \cdots & v_{mn}
+    \end{bmatrix} &= P_m \begin{bmatrix}
+        M_1 & M_2 & \cdots & M_n
+    \end{bmatrix}
+\end{flalign*}
+\noindent
+Put Together
+\[
+    \overline m = \begin{bmatrix}
+        u_{11} & \cdots \\
+        v_{11} & \cdots \\
+        u_{21} & \cdots \\
+        v_{21} & \cdots \\
+    \end{bmatrix}^n_{2m} = \begin{bmatrix}
+        P_1 \\ P_2 \\ \vline \\ P_m
+    \end{bmatrix} \begin{bmatrix}
+        M_1 & M_2 & \cdots & M_n
+    \end{bmatrix}^n
+\]
+Showed in rank 3
+\\
+Perform SVD on $\overline m$ 
+\begin{flalign*}
+    \overline m &=USV^\top  \\ 
+    &= \tilde P \tilde M \text{ where $\tilde P = U$ and $\tilde M = SV^\top$} \\
+    &= (PQ) (Q^{-1}M) = \overline P \overline M \text{  ($\tilde P \ne \overline P$, $\tilde M \ne \overline M$; diff coords)}
+\end{flalign*}\noindent
+We compute 3D structure and cameras up to an affine coordinate transformation 
+\\
+Rectify Affine to Euclidean:
+\begin{flalign*}
+    \intertext{Selected}
+    [\tilde m] &= Q \underset{\text{(eucl.)}}{\overline M } = Q \begin{bmatrix}
+        0 & 0 & \cdots \\
+        0 & 2 & \cdots \\
+        0 & 0 & \cdots 
+    \end{bmatrix}
+    \intertext{Solve for $Q$}
+    \tilde M &= Q \overline M \\
+    ()^\top &= ( \ )^\top \\
+    \tilde M ^\top &= \overline M ^\top Q ^\top
+    \intertext{Solve LU fact. for $\overline M$}
+\end{flalign*}
+\noindent
+With no 3D ground truth, what do we know $\overline P$ $\gets$ desired
+\[
+    \overline P = Q \tilde P
+\]
+rot matrix
+\[
+    \overline P = \begin{bmatrix}
+        \cdots & r_1 & \cdots \\
+        \cdots & r_2 & \cdots \\
+        & \vdots &
+    \end{bmatrix}
+\]
+Get cholesky decomp.
+\begin{flalign*}
+    0 = r_1^\top r_2 &= P_1 Q^\top Q P_2 \\
+    &= P_1 C P_2\\
+    s^2 = r_1^\top r_1 &= C \\
+    s^2 = r_2^\top r_2 &= C \\
+    & \downarrow
+    \\
+    & \cdots
+\end{flalign*}
+% \subsubsection*{Step 1: Show Existence/Mathematical Structure of Prblm}
+% \subsubsection*{Step 2: How do we apply to data}
+
+
+
+
+
+
 
 \end{document}
 
