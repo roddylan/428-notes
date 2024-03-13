@@ -100,6 +100,7 @@
 % \section*{Lecture 1}
 
 \section{Lecture - Mar 12}
+Lec09DynTextimpColl12\\[10pt]
 Structure from Silhouette
 \begin{list}{}{}
   \item Get cone ray from silhouette
@@ -286,9 +287,62 @@ Small image motion
 \[
   I = I_0 + \frac{\partial I}{\partial u} \Delta u + \frac{\partial I}{\partial v}\Delta v
 \]
+Spatial fixed basis
 
 \subsection{Linear basis for spatio-temporal variation}
-% On the obj. 
+On the obj./texture plane:
+\begin{list}{}{}
+  \item variation resulting from small warp perturbation
+  \item Taylor expansion
+  \begin{center}
+    \includegraphics[width=.6\textwidth]{"imgs/taylor expansion mar12.png"}
+  \end{center}
+\end{list}
+
+\subsection{Geometric spatial temporal variability}
+Image 'warp'
+\[
+  T(\mathbf x) = I(W(\mathbf x ,\mu))
+\]
+Image variability caused by imperfect warp
+\[
+  \Delta T = I(W(\mathbf x, \mu + \Delta \mu)) - T_w
+\]
+First order approx.
+\[
+  \Delta T = I(W(\mathbf x, \mu)) + \nabla T \frac{\partial W}{\partial \mu} - T_w=
+  \nabla T \frac{\partial W}{\partial \mu}
+\]
+Concrete examples: img plane; out of plane
+\subsection{Variability due to a planar projective warp (homography)}
+\subsection{Out of Plane Variability}
+\subsection{Photometric Variation}
+light changes how obj looks (?)
+\\
+dont need to raytrace
+
+
+\subsection{Composite Variability}
+composite texture intesity variability
+\[
+  \Delta \mathbf T = \Delta \mathbf T_s + \Delta \mathbf T_d + \Delta \mathbf T_l + \Delta \mathbf T_e
+\]
+planar + depth + light + res. err.
+\\[5pt]
+Can be modeled as sum of basis
+\begin{flalign*}
+  \Delta \mathbf T &= \mathbf{B_s y_s} + \mathbf{B_d y_d} + \mathbf{B_l y_l} + \Delta \mathbf(T_e)
+  \\
+  &= \mathbf{By + \Delta T_e}
+\end{flalign*}
+
+\subsection{How to Compute}
+Slide 31 - 32 
+
+
+
+\subsection{Dyntex}
+
 
 \end{document}
 
