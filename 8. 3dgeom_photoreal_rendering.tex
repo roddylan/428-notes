@@ -344,5 +344,128 @@ Slide 31 - 32
 \subsection{Dyntex}
 
 
+
+\pagebreak
+\section{Lecture - Mar 19}
+lec07modeling18EmbMedia
+% \\[10pt]
+
+\subsection{Summary, 2 view rec}
+$F$ independent of point correspondence, maps them to each other; same for all
+\\
+can use real measurements to rectify 
+
+\subsection{Multiview Stereo}
+Nonsequential image selections - features lost and reinitialized as new features
+\begin{list}{}{}
+  \item SOVE by matching with other \textit{close} views
+\end{list}
+
+
+\subsubsection{Relating more views}
+Relating nearby images
+\\
+For every view $i$
+\begin{list}{}{}
+  \item extract features
+  \item compute 2 view geom $i-1$ / $i$ and matches 
+  \item Compute pose using robust algo
+  \item For all close views $k$:
+  \item \begin{list}{}{}
+    \item compute two view geom $k$ / $i$ and matches
+    \item infer new 2D - 3D matches and add to list 
+  \end{list}
+  \item Refine pose using all 2D - 3D matches
+  \item Refine existing structure
+  \item Initialize new struct
+\end{list}
+If viewpoints are close; most img changes can be modelled through a planar homography
+(can approx. map close imgs via homography)
+\\
+Qualitative distance measure is obtained via residual error on best possible planar
+homography 
+\\
+Find 'best' homography (?)
+
+\noindent\rule{\textwidth}{0.2pt}
+
+\subsection{Refining structure and Motion}
+Minimize reprojection error
+\[
+  \min_{\hat P_k, \hat M_i}
+\]
+via MLE (if error zero mean gaussian noise); nonlinear opt.
+\\
+Huge problem but can be solved efficiently (bundle adjustment)
+\\
+Sometimes do this for simple scenes 
+(usually use fundamental matrix method but can use several sets of affine models)
+\\
+Quality of final doesnt depend on initial
+
+
+\subsection{Bundle Adjustment}
+\textbf{Refining a captured model}
+\\
+Search method; change X and P until we get best match
+\\
+Refine structure $X_j$ and motion $P^i$ 
+\\
+Minimize geometric error
+\\
+ML solution, assuming noise is Gaussian
+\\
+Tolerant to missing data 
+\[
+  \min \sum_{i,j} d(PX, x)^2
+\]
+
+
+\subsection{Projective ambiguity and self-calibration}
+\textbf{autocalibration} - determine projective transformation $T$ that
+upgrades the projective reconstruction to a metric one
+
+
+\subsection{Complete modeling system}
+Seq. of frame $\to$ scene struct
+\begin{enumerate}
+  \item Get corresponding points (via. tracking or detect/match)
+    \subitem tracking helpful for maintaining feature correspondence
+  
+  \item Affine factorization (alr. computes ML estimate over all frames; no need for
+  bundle adjustment for simple scenes)
+
+  \item Self calibration
+  
+  \item If several model segments: merge, bundle adjust
+
+\end{enumerate}
+
+\subsection{Stereo rec}
+Sparse SFM $\to$ detailed map
+\\
+Get depth map via stereo
+
+
+\subsection{Stereo image rect}
+Reproject images planes onto a common plane; planes parallel w/ line b/w optical center 
+\\
+All epipolar lines are \textbf{parallel} in the rectified image plane.
+\\
+Rotate to make parallel $\to$ scan line matching
+\\[5pt]
+Take epipolar point $\to$ make infinite point $\to$ parallel epipolar lines
+\\
+Do this in a way that minimizes distortion
+
+
+
+
+
+
+
+
+
+
 \end{document}
 
