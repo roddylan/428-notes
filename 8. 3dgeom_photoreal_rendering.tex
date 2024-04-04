@@ -458,6 +458,219 @@ Take epipolar point $\to$ make infinite point $\to$ parallel epipolar lines
 \\
 Do this in a way that minimizes distortion
 
+\section{Lecture - Mar 21}
+lec07modeling18EmbMedia
+\subsection{Stereo image rect cont.}
+% When we use tracking 
+Make use of epipolar geometry, move 2 separate image planes onto same plane to simplify
+search problem $\to$ epipolar lines go from defined by Fund matrix to being in 
+canonical (rows corr. to rows)
+\\[5pt]
+Find epipolar point thats finite, get homography that maps it to point at infinity
+\\[5pt]
+Could choose any plane to rep. ray sets, but want planes that are similar to the 
+imgs (dont compress x,y axis too much)
+
+\subsection{Stereo Matching Algos}
+Match pixels in conjugate epipolar lines
+\begin{list}{}{}
+  \item assume brightness constancy
+  \item many approaches
+\end{list}
+
+\subsubsection{Basic algo}
+For each epipolar line:
+\begin{list}{}{}
+  \item For each pixel in the left img:
+  \item \begin{list}{-}{}
+    \item compare with every pixel on same epipolar line in right img
+    \item pick pixel with minimum match cost
+  \end{list}
+\end{list}
+Improvement: match windows
+\\
+Solve as energy minimization
+
+\subsubsection{Stereo as energy min}
+Find disparities $d$ that minimize an energy func. $E(d)$
+\\
+Simple pixel / window matching:
+\[
+  E(d) = \sum_{(x,y)\in I} C(x,y,d(x,y))
+\]
+$C(x,y,d(x,y))$ is the SSD distance b/w windows $I(x,y)$ and $J(x,y + d(x,y))$
+\\
+$C(x,y,d)$ - the disparity space image (DSI)
+\[
+  d(x,y) = \argmin_{d'} C(x,y,d')
+\]
+Simple pixel window matching - choose min of each col in DSI independently
+
+\subsection{Stereo Matching}
+Epipolar line gives 1D matching \\
+Ordering
+\\
+Uniqueness
+\\
+Disparity Limit
+\\
+Disparity Gradient Limit
+\\
+Trade offs:
+\begin{list}{}{}
+  \item matching cost (data)
+  \item discontinuities (prior)
+\end{list}
+
+
+
+
+\subsection{Disparity Map}
+$(x',y') = (x+D(x,y),y)$
+
+\subsection{Hierarchical stereo matching}
+Down sample w/ gaussian pyramid
+\\
+Faster comp.
+\\
+Deals w/ large disparity ranges
+
+\subsection{}
+Sparse point cloud $\to$ can use splatting 
+
+\subsection{SLAM - Online scene modeling}
+Triangulate points and reproject texture
+
+\section{Lecture - Mar 26}
+\subsection{Methods of Modelling - MVS}
+\subsubsection{Shape reconstruction}
+Given:
+\begin{list}{}{}
+  \item set of imgs of an obj / scene
+  \item camera calibration info
+  \item light cal. info
+\end{list}
+Find surface that best agrees w/ input imgs
+\\
+Approach:
+\begin{list}{}{}
+  \item choose surface representation $\mathcal S, X$
+  \item define photo consistency func (+ regularization in practice) $\phi (X)$
+  \item solve minimization
+  \[
+    \min_\mathcal S \int_{X\in\mathcal S} \phi(X)dX
+  \]
+\end{list}
+
+\subsubsection{Photo Consistency Function}
+\[
+  \phi (X)
+\]
+Based on img cues (shading, stereo, silhouette, $\ldots$)
+\\
+Extension SFS/PS to multi view: (need cam + light calibration)
+\begin{list}{}{}
+  \item move cam $\to$ SFS
+  \item move obj. $\to$ PS
+\end{list}
+
+\subsubsection{Surface Repr}
+Image-centered
+\begin{list}{}{}
+  \item depth/disparity wrt image plane
+  \item partial obj rec - limited res, viewpoint dependent
+\end{list}
+Object-centered
+\begin{list}{}{}
+  \item Voxels
+  \item Level sets (implicit - fold)
+  \item Mesh
+  \item Depth wrt a base mesh
+  \item Local patches
+\end{list}
+
+
+\subsubsection{Volumetric Representation}
+obj: collection of voxels\\
+normals: ?\\
+method: carve away voxels that arent photoconsistent w imgs (discrete)\\
+regularization: no way of ensuring smoothness
+\\
+visibility: ensured by the order of traversal (in general a problem)
+
+\subsubsection{Disparity/Depth map}
+obj (surface): $s(x,y) = (x,y,f(x,y))$
+\\
+normals: \[
+  \mathbf u = s_x \times s_y = [s_x, s_y, -1]^\top
+\]
+method: find $f$ tht best agrees w input imgs (min the cost functional integrated over surface)
+\[
+  \min \int_x\int_y \phi (x,y,f,\nabla f) dxdy
+\]
+regularization: smoothness on $\nabla f$
+\[
+  \phi_{smooth} = \nabla f^2
+\]
+visibility: ? (fine mesh)
+
+
+\subsubsection{Depth wrt base mesh}
+obj (surface): $X=X^B + fd$ d = displacement dir. (displacement map)
+\\
+normals: local (per triangle)
+\[
+  \mathbf n = [f_x, f_y, -1]^\top 
+\]
+
+transform to global cs
+\\
+methods: 
+\[
+  \min_f \int_{X^B} \phi (X^B, f, \nabla f)dxdy
+\]
+regularization: smoothness on $\nabla f$ (local / global)
+\\
+visibility: ? (fine mesh)
+
+
+\subsubsection{Mesh}
+obj: mesh vertices
+\[
+  X = \lambda_3 v_1 + \lambda_2 v_2 + \lambda _3 v_3
+\]
+normals: interpolated
+\[
+  n = \lambda_1 n_1 + \lambda _2 n_2 + \lambda_3 n_3
+\]
+\[
+  n_j = \sum_{j,k,i\in\Delta (v_j)} (v_k - v_j) \times (v_i - v_j)
+\]
+methods:
+\\
+(finish)
+
+\subsection{voxel coloring}
+carve away voxels until photo consistent\\
+depth ordering
+
+\subsection{space carving: photo hull}
+photo hull - union of all photo consistent shapes
+
+\subsection{graph cut}
+multiple possible regularizations
+
+% \subsection{Photo consistency function}
+
+
+\subsection{surface evolution}
+
+
+
+
+
+
+
 
 
 
@@ -468,4 +681,3 @@ Do this in a way that minimizes distortion
 
 
 \end{document}
-
